@@ -31,6 +31,28 @@ export default [
               sourceTag: 'type:honours',
               onlyDependOnLibsWithTags: ['type:engine', 'type:content'],
             },
+            {
+              sourceTag: 'type:player-view',
+              onlyDependOnLibsWithTags: [
+                'type:engine',
+                'type:content',
+                'type:honours',
+              ],
+            },
+            {
+              sourceTag: 'type:renderer',
+              onlyDependOnLibsWithTags: ['type:player-view'],
+            },
+            {
+              sourceTag: 'type:app',
+              onlyDependOnLibsWithTags: [
+                'type:engine',
+                'type:content',
+                'type:honours',
+                'type:player-view',
+                'type:renderer',
+              ],
+            },
           ],
         },
       ],
@@ -67,12 +89,25 @@ export default [
       '@typescript-eslint/require-array-sort-compare': 'error',
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@lunch-campaign/*/testing'],
+              message:
+                'Test fixtures are for specs and other fixtures, never production code.',
+            },
+          ],
+        },
+      ],
     },
   },
   {
     files: ['**/*.spec.ts', '**/testing/**/*.ts'],
     rules: {
       '@typescript-eslint/no-magic-numbers': 'off',
+      'no-restricted-imports': 'off',
       '@typescript-eslint/explicit-function-return-type': [
         'error',
         { allowTypedFunctionExpressions: true },

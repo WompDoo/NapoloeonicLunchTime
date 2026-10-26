@@ -53,6 +53,10 @@ function decodeZoneDefinition(raw: unknown, index: number): ZoneDefinition {
   return {
     id: toZoneId(decodeNonEmptyString(record['id'], `${path}.id`)),
     kind: decodeOneOf(record['kind'], ZONE_KINDS, `${path}.kind`),
+    position: {
+      row: decodePositiveInteger(record['row'], `${path}.row`),
+      column: decodePositiveInteger(record['column'], `${path}.column`),
+    },
   };
 }
 
@@ -81,6 +85,11 @@ function collectMapIssues(map: MapDefinition): readonly string[] {
     ...findDuplicates(zoneIds).map(
       (zoneId): string => `duplicate zone id ${zoneId}`,
     ),
+    ...findDuplicates(
+      map.zones.map(
+        (zone): string => `${zone.position.row},${zone.position.column}`,
+      ),
+    ).map((position): string => `two zones share position ${position}`),
     ...map.connections.flatMap((connection): readonly string[] =>
       describeConnectionIssues(connection, isKnownZone),
     ),

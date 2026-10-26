@@ -87,6 +87,7 @@ export const DEFAULT_MOVEMENT_RULES: MovementRules = {
 export const DEFAULT_INTELLIGENCE_RULES: IntelligenceRules = {
   spiesAvailable: true,
   unitCountsVisible: true,
+  spyCost: 2,
 };
 
 export const DEFAULT_STARTING_UNITS: UnitCounts = {

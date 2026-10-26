@@ -5,9 +5,9 @@ import { parseMapDefinition } from './parse-map-definition';
 const LINE_MAP = {
   id: 'line',
   zones: [
-    { id: 'Z3', kind: 'capital' },
-    { id: 'Z1', kind: 'capital' },
-    { id: 'Z2', kind: 'city' },
+    { id: 'Z3', kind: 'capital', row: 1, column: 3 },
+    { id: 'Z1', kind: 'capital', row: 1, column: 1 },
+    { id: 'Z2', kind: 'city', row: 1, column: 2 },
   ],
   connections: [
     ['Z3', 'Z2'],
@@ -28,9 +28,9 @@ describe('parseMapDefinition', () => {
     expect(parseMapDefinition(LINE_MAP)).toEqual({
       id: 'line',
       zones: [
-        { id: 'Z1', kind: 'capital' },
-        { id: 'Z2', kind: 'city' },
-        { id: 'Z3', kind: 'capital' },
+        { id: 'Z1', kind: 'capital', position: { row: 1, column: 1 } },
+        { id: 'Z2', kind: 'city', position: { row: 1, column: 2 } },
+        { id: 'Z3', kind: 'capital', position: { row: 1, column: 3 } },
       ],
       connections: [
         ['Z1', 'Z2'],
@@ -68,7 +68,9 @@ describe('parseMapDefinition', () => {
     },
     {
       name: 'an unknown zone kind',
-      raw: withOverrides({ zones: [{ id: 'Z1', kind: 'fort' }] }),
+      raw: withOverrides({
+        zones: [{ id: 'Z1', kind: 'fort', row: 1, column: 1 }],
+      }),
       message: 'map.zones[0].kind must be one of: plain, city, capital',
     },
     {
@@ -80,6 +82,11 @@ describe('parseMapDefinition', () => {
       name: 'a connection with a missing end',
       raw: withOverrides({ connections: [['Z1']] }),
       message: 'map.connections[0][1] must be a non-empty string',
+    },
+    {
+      name: 'a zone without a grid position',
+      raw: withOverrides({ zones: [{ id: 'Z1', kind: 'plain', row: 1 }] }),
+      message: 'map.zones[0].column must be a positive integer',
     },
     {
       name: 'a zero seat',
@@ -95,8 +102,23 @@ describe('parseMapDefinition', () => {
   it.each([
     {
       name: 'duplicate zone ids',
-      overrides: { zones: [...LINE_MAP.zones, { id: 'Z2', kind: 'plain' }] },
+      overrides: {
+        zones: [
+          ...LINE_MAP.zones,
+          { id: 'Z2', kind: 'plain', row: 2, column: 2 },
+        ],
+      },
       issue: 'duplicate zone id Z2',
+    },
+    {
+      name: 'two zones in one grid position',
+      overrides: {
+        zones: [
+          ...LINE_MAP.zones,
+          { id: 'Z4', kind: 'plain', row: 1, column: 2 },
+        ],
+      },
+      issue: 'two zones share position 1,2',
     },
     {
       name: 'connections to unknown zones',

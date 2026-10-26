@@ -1,0 +1,149 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renderPlayerView renders a day of the week 1`] = `
+"LUNCH CAMPAIGN - Wednesday (turn 3), as seen by kutuzov-player
+Supply: 12. A spy costs 2 supply.
+In play: typhus.
+
+MAP
++----------+   +----------+   +----------+   +----------+
+| A1 * P1  |---| A2   P1  |---| A3   P2  |---| A4 * P2  |
+| 3 units  |   | 1 unit   |   | 0 units  |   | 3 units  |
++----------+   +----------+   +----------+   +----------+
+      |              |              |              |
++----------+   +----------+   +----------+   +----------+
+| B1   P1  |---| B2 o P1  |---| B3 o P2  |---| B4   P2  |
+| 1 unit   |   | 4 units  |   | 4 units  |   | 1 unit   |
++----------+   +----------+   +----------+   +----------+
+      |              |              |              |
++----------+   +----------+   +----------+   +----------+
+| C1   P3  |---| C2 o P3  |---| C3 o P4  |---| C4   --  |
+| none     |   | 3L       |   | 2 units  |   | 0 units  |
++----------+   +----------+   +----------+   +----------+
+      |              |              |              |
++----------+   +----------+   +----------+   +----------+
+| D1 * P3  |---| D2   P3  |---| D3   P4  |---| D4 * P4  |
+| 1C 2S 1A |   | 1C       |   | 1 unit   |   | 7 units  |
++----------+   +----------+   +----------+   +----------+
+* capital, o city. P1-P4: seats (see Players).
+Armies: L line, C cavalry, S skirmishers, A artillery.
+
+PLAYERS
+P1  napoleon-player       napoleon    0 pts  ability ready  no upgrades
+P2  wellington-player     wellington  0 pts  ability ready  no upgrades
+P3  kutuzov-player (you)  kutuzov     0 pts  ability ready  no upgrades
+P4  murat-player          murat       0 pts  ability ready  no upgrades
+
+HONOURS
+last-stand (3 pts): nobody would earn it yet
+  napoleon-player 0, wellington-player 0, kutuzov-player 0, murat-player 0
+blitz (3 pts): napoleon-player, wellington-player, kutuzov-player and murat-player leading
+  napoleon-player 2, wellington-player 2, kutuzov-player 2, murat-player 2
+iron-discipline (3 pts): nobody would earn it yet
+  napoleon-player 0 (not eligible), wellington-player 0 (not eligible), kutuzov-player 0 (not eligible), murat-player 0 (not eligible)
+
+SPY REPORTS TODAY
+Spy report on C3, held by murat-player: 2C
+
+LAST NIGHT
+murat-player recruited 2 units at D4
+napoleon-player moved 1 unit: A1 -> A2
+napoleon-player moved 4 units: A2 -> B2
+wellington-player moved 4 units: A3 -> B3
+kutuzov-player moved 3L: C1 -> C2
+napoleon-player captured B2
+wellington-player captured B3
+kutuzov-player captured C2
+kutuzov-player produced 7 supply
+Event announced: typhus, in play on turn 3
+Standings: napoleon-player 9 units, 4 zones, 0 pts; wellington-player 8 units, 4 zones, 0 pts; kutuzov-player 8 units, 4 zones, 0 pts; murat-player 10 units, 3 zones, 0 pts
+"
+`;
+
+exports[`renderPlayerView renders the finished match 1`] = `
+"LUNCH CAMPAIGN - the match is over, as seen by murat-player
+Supply: 28. No spies today.
+No event in play.
+
+MAP
++----------+   +----------+   +----------+   +----------+
+| A1 * P1  |---| A2   P1  |---| A3   P2  |---| A4 * P2  |
+| 2 units  |   | 1 unit   |   | 0 units  |   | 5 units  |
++----------+   +----------+   +----------+   +----------+
+      |              |              |              |
++----------+   +----------+   +----------+   +----------+
+| B1   P1  |---| B2 o P1  |---| B3 o P2  |---| B4   P2  |
+| 1 unit   |   | 2 units  |   | 0 units  |   | 0 units  |
++----------+   +----------+   +----------+   +----------+
+      |              |              |              |
++----------+   +----------+   +----------+   +----------+
+| C1   P3  |---| C2 o P4  |---| C3 o P4  |---| C4   P4  |
+| 1 unit   |   | 1S       |   | none     |   | 1L       |
++----------+   +----------+   +----------+   +----------+
+      |              |              |              |
++----------+   +----------+   +----------+   +----------+
+| D1 * P3  |---| D2   P4  |---| D3   P4  |---| D4 * P4  |
+| 4 units  |   | 1C       |   | none     |   | 1L 3S 1A |
++----------+   +----------+   +----------+   +----------+
+* capital, o city. P1-P4: seats (see Players).
+Armies: L line, C cavalry, S skirmishers, A artillery.
+
+PLAYERS
+P1  napoleon-player     napoleon    18 pts  ability ready  no upgrades
+P2  wellington-player   wellington  18 pts  ability ready  no upgrades
+P3  kutuzov-player      kutuzov     15 pts  ability ready  no upgrades
+P4  murat-player (you)  murat       21 pts  ability ready  no upgrades
+
+HONOURS
+last-stand (3 pts): napoleon-player leading
+  napoleon-player 2, wellington-player 0, kutuzov-player 0, murat-player 0
+blitz (3 pts): murat-player leading
+  napoleon-player 2, wellington-player 2, kutuzov-player 2, murat-player 3
+iron-discipline (3 pts): napoleon-player and kutuzov-player leading
+  napoleon-player 2, wellington-player 5, kutuzov-player 2, murat-player 3
+
+SPY REPORTS TODAY
+None.
+
+LAST NIGHT
+wellington-player moved 1 unit: B3 -> B2
+murat-player moved 1S: C3 -> C2
+murat-player moved 1L: D4 -> C4
+murat-player moved 2C: D4 -> D3 -> D2
+Battle forms at B2: napoleon-player defends with 2 units; wellington-player attacks with 1 unit
+Battle forms at C2: kutuzov-player defends with 1L; murat-player attacks with 1S
+Battle forms at D2: kutuzov-player defends with 1C; murat-player attacks with 2C
+The battle at B2 ended under bombardment: napoleon-player left standing
+Battle at C2: murat-player wins
+  kutuzov-player (defender): 1L -> none, strength 1.25 (1 base, +25% defender)
+    line vs skirmishers 1
+  murat-player (attacker): 1S -> 1S, strength 2
+    skirmishers vs line 2
+kutuzov-player retreated 1 unit: C2 -> C1
+Battle at D2: murat-player wins
+  kutuzov-player (defender): 1C -> none, strength 1.25 (1 base, +25% defender)
+    cavalry vs cavalry 1
+  murat-player (attacker): 2C -> 1C, strength 2
+    cavalry vs cavalry 2
+kutuzov-player retreated 1 unit: D2 -> D1
+murat-player captured C2 from kutuzov-player
+murat-player captured C4
+murat-player captured D2 from kutuzov-player
+murat-player produced 10 supply
+napoleon-player scored 12 points for 2 cities
+wellington-player scored 12 points for 2 cities
+kutuzov-player scored 6 points for 1 city
+murat-player scored 18 points for 3 cities
+Standings: napoleon-player 6 units, 4 zones, 18 pts; wellington-player 5 units, 4 zones, 18 pts; kutuzov-player 5 units, 2 zones, 15 pts; murat-player 8 units, 6 zones, 21 pts
+
+FINAL SCORE
+Winner: murat-player
+1.  murat-player       24 pts  21 from cities  3 from honours
+2.  napoleon-player    24 pts  18 from cities  6 from honours
+3.  wellington-player  18 pts  18 from cities  0 from honours
+4.  kutuzov-player     18 pts  15 from cities  3 from honours
+last-stand: napoleon-player
+blitz: murat-player
+iron-discipline: napoleon-player and kutuzov-player
+"
+`;

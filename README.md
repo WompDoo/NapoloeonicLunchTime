@@ -8,18 +8,24 @@ the day and resolve simultaneously overnight; a match lasts one working week.
 
 ## Projects
 
-| Project        | Contents                                                                                     |
-| -------------- | -------------------------------------------------------------------------------------------- |
-| `libs/engine`  | Pure, deterministic rules engine: map loading, combat, modifiers, `resolveTurn`              |
-| `libs/content` | Data only: the default `MatchConfig`, the v0 map JSON, upgrades, commanders, events, honours |
-| `libs/honours` | The 12 honours as queries over the replay log, and final scoring with tie-breaks             |
+| Project             | Contents                                                                                     |
+| ------------------- | -------------------------------------------------------------------------------------------- |
+| `libs/engine`       | Pure, deterministic rules engine: map loading, combat, modifiers, `resolveTurn`              |
+| `libs/content`      | Data only: the default `MatchConfig`, the v0 map JSON, upgrades, commanders, events, honours |
+| `libs/honours`      | The 12 honours as queries over the replay log, and final scoring with tie-breaks             |
+| `libs/player-view`  | `filterForPlayer`, spies and the replay as each player may see it: the only path to players  |
+| `libs/render-ascii` | Plain-text rendering of a `PlayerView`: map, players, honours, spy reports, last night       |
+| `apps/gm-cli`       | Runs a match from JSON files for playtests: [how to run a week](apps/gm-cli/README.md)       |
 
 Upgrades, commander passives and abilities, and events are all **modifiers**: plain data that patches the
 parameters the engine reads, or adds a named step to a resolution phase. The engine never asks "is this Napoleon?";
 it asks for a player's effective parameters tonight. A new event needs data and, at most, one new phase-step action.
 
-Dependencies point one way: `honours → content → engine` (honours may also read the engine directly). The engine never imports content (enforced by
-`@nx/enforce-module-boundaries`), and engine tests use their own fixtures so playtest tuning never breaks them.
+Dependencies point one way: `gm-cli → render-ascii → player-view → honours → content → engine` (each may also read
+the layers below directly, except renderers, which see `player-view` only, so they can never reach hidden state). The
+engine never imports content (enforced by `@nx/enforce-module-boundaries`), and engine tests use their own fixtures so
+playtest tuning never breaks them. Fixtures shared across projects live in `src/testing` behind a
+`@lunch-campaign/<project>/testing` entry point that only specs and other fixtures may import.
 
 ## Commands
 
@@ -29,6 +35,7 @@ yarn verify       # format check + lint + typecheck + test (what CI runs)
 yarn test         # Jest; fails below 100% coverage
 yarn lint         # ESLint, including complexity ≤ 2 and engine purity rules
 yarn typecheck
+yarn -s gm help   # the GM CLI for playtests
 ```
 
 Single project: `npx nx test engine`, `npx nx lint content`, …

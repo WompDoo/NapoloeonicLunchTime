@@ -40,8 +40,9 @@ export interface EffectiveParameters {
   readonly recruitCost: UnitTypeRecord<number>;
   readonly upgradeCost: number;
   readonly productionFactor: number;
-  /** Read by player views and spies (Milestone 4). */
+  /** Read by player views and spies. */
   readonly spiesAvailable: boolean;
+  readonly spyCost: number;
   readonly unitCountsVisible: boolean;
   readonly spyHiddenUnitTypes: readonly UnitType[];
 }
@@ -67,6 +68,7 @@ export function baseParameters(config: MatchConfig): EffectiveParameters {
     upgradeCost: config.economy.upgradeCost,
     productionFactor: NO_PRODUCTION_CHANGE,
     spiesAvailable: config.intelligence.spiesAvailable,
+    spyCost: config.intelligence.spyCost,
     unitCountsVisible: config.intelligence.unitCountsVisible,
     spyHiddenUnitTypes: [],
   };

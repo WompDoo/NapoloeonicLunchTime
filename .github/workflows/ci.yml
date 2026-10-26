@@ -32,4 +32,4 @@ jobs:
       - uses: nrwl/nx-set-shas@v4
 
       - run: npx nx format:check
-      - run: npx nx affected -t lint typecheck test
+      - run: npx nx affected -t lint typecheck test build

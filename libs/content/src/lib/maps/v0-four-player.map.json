@@ -3,67 +3,99 @@
   "zones": [
     {
       "id": "A1",
-      "kind": "capital"
+      "kind": "capital",
+      "row": 1,
+      "column": 1
     },
     {
       "id": "A2",
-      "kind": "plain"
+      "kind": "plain",
+      "row": 1,
+      "column": 2
     },
     {
       "id": "A3",
-      "kind": "plain"
+      "kind": "plain",
+      "row": 1,
+      "column": 3
     },
     {
       "id": "A4",
-      "kind": "capital"
+      "kind": "capital",
+      "row": 1,
+      "column": 4
     },
     {
       "id": "B1",
-      "kind": "plain"
+      "kind": "plain",
+      "row": 2,
+      "column": 1
     },
     {
       "id": "B2",
-      "kind": "city"
+      "kind": "city",
+      "row": 2,
+      "column": 2
     },
     {
       "id": "B3",
-      "kind": "city"
+      "kind": "city",
+      "row": 2,
+      "column": 3
     },
     {
       "id": "B4",
-      "kind": "plain"
+      "kind": "plain",
+      "row": 2,
+      "column": 4
     },
     {
       "id": "C1",
-      "kind": "plain"
+      "kind": "plain",
+      "row": 3,
+      "column": 1
     },
     {
       "id": "C2",
-      "kind": "city"
+      "kind": "city",
+      "row": 3,
+      "column": 2
     },
     {
       "id": "C3",
-      "kind": "city"
+      "kind": "city",
+      "row": 3,
+      "column": 3
     },
     {
       "id": "C4",
-      "kind": "plain"
+      "kind": "plain",
+      "row": 3,
+      "column": 4
     },
     {
       "id": "D1",
-      "kind": "capital"
+      "kind": "capital",
+      "row": 4,
+      "column": 1
     },
     {
       "id": "D2",
-      "kind": "plain"
+      "kind": "plain",
+      "row": 4,
+      "column": 2
     },
     {
       "id": "D3",
-      "kind": "plain"
+      "kind": "plain",
+      "row": 4,
+      "column": 3
     },
     {
       "id": "D4",
-      "kind": "capital"
+      "kind": "capital",
+      "row": 4,
+      "column": 4
     }
   ],
   "connections": [

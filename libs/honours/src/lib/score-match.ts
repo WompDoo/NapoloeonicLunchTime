@@ -172,7 +172,7 @@ const compareStanding = compareInOrder<Omit<PlayerFinalScore, 'rank'>>([
   (left, right): number => left.unitsLost - right.unitsLost,
 ]);
 
-function requireHonourId(honourId: string): HonourId {
+export function requireHonourId(honourId: string): HonourId {
   if (!isHonourId(honourId)) {
     throw new EngineContractError(`Unknown honour ${honourId}`);
   }

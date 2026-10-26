@@ -1,0 +1,6 @@
+{
+  "napoleon-player": ["move A2 -> B2 2L 2C", "move A1 -> A2 1A"],
+  "wellington-player": ["move A3 -> B3 2C 2S"],
+  "kutuzov-player": ["move C1 -> C2 3L"],
+  "murat-player": ["recruit 2 skirmishers"]
+}

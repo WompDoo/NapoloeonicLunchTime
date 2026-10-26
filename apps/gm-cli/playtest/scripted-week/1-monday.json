@@ -1,0 +1,10 @@
+{
+  "napoleon-player": [
+    "move A1 -> A2 2L 2C",
+    "move A1 -> B1 1S",
+    "recruit 1 line"
+  ],
+  "wellington-player": ["move A4 -> A3 2C 2S", "move A4 -> B4 1L"],
+  "kutuzov-player": ["move D1 -> C1 3L", "move D1 -> D2 1C"],
+  "murat-player": ["move D4 -> C4 -> C3 2C", "move D4 -> D3 1S"]
+}

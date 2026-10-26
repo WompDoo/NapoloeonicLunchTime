@@ -10,9 +10,16 @@ export const ZONE_KIND_COUNTS_AS_CITY: Readonly<Record<ZoneKind, boolean>> = {
   capital: true,
 };
 
+/** Where a zone is drawn, 1-based: renderers lay the map out on this grid. */
+export interface ZonePosition {
+  readonly row: number;
+  readonly column: number;
+}
+
 export interface ZoneDefinition {
   readonly id: ZoneId;
   readonly kind: ZoneKind;
+  readonly position: ZonePosition;
 }
 
 /** An undirected edge between two zones. */

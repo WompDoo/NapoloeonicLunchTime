@@ -52,6 +52,7 @@ describe('map queries', () => {
     expect(findZoneDefinition(TEST_MAP, toZoneId('B2'))).toEqual({
       id: 'B2',
       kind: 'city',
+      position: { row: 2, column: 2 },
     });
     expect(() => findZoneDefinition(TEST_MAP, toZoneId('D4'))).toThrow(
       EngineContractError,

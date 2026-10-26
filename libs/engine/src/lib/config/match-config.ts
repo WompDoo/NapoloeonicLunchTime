@@ -49,6 +49,8 @@ export interface MovementRules {
 export interface IntelligenceRules {
   readonly spiesAvailable: boolean;
   readonly unitCountsVisible: boolean;
+  /** Supply a spy report costs, charged when the spy is sent. */
+  readonly spyCost: number;
 }
 
 export interface OrderRules {

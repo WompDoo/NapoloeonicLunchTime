@@ -23,7 +23,18 @@
     "paths": {
       "@lunch-campaign/engine": ["./libs/engine/src/index.ts"],
       "@lunch-campaign/content": ["./libs/content/src/index.ts"],
-      "@lunch-campaign/honours": ["./libs/honours/src/index.ts"]
+      "@lunch-campaign/content/testing": [
+        "./libs/content/src/testing/index.ts"
+      ],
+      "@lunch-campaign/honours": ["./libs/honours/src/index.ts"],
+      "@lunch-campaign/honours/testing": [
+        "./libs/honours/src/testing/index.ts"
+      ],
+      "@lunch-campaign/player-view": ["./libs/player-view/src/index.ts"],
+      "@lunch-campaign/player-view/testing": [
+        "./libs/player-view/src/testing/index.ts"
+      ],
+      "@lunch-campaign/render-ascii": ["./libs/render-ascii/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

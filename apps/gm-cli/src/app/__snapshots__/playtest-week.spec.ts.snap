@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`the example playtest week scores the week 1`] = `
+"Winner: murat-player
+1.  murat-player       24 pts  21 from cities  3 from honours
+2.  napoleon-player    24 pts  18 from cities  6 from honours
+3.  wellington-player  18 pts  18 from cities  0 from honours
+4.  kutuzov-player     18 pts  15 from cities  3 from honours
+last-stand: napoleon-player
+blitz: murat-player
+iron-discipline: napoleon-player and kutuzov-player
+"
+`;

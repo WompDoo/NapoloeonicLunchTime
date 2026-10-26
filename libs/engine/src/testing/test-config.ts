@@ -78,7 +78,7 @@ export const TEST_CONFIG: MatchConfig = {
   movement: {
     moveRange: { line: 1, cavalry: 1, skirmishers: 1, artillery: 1 },
   },
-  intelligence: { spiesAvailable: true, unitCountsVisible: true },
+  intelligence: { spiesAvailable: true, unitCountsVisible: true, spyCost: 2 },
   orders: { maxMoveOrdersPerTurn: 5 },
   schedule: [
     { label: 'Monday', scoring: [], eventActive: false },

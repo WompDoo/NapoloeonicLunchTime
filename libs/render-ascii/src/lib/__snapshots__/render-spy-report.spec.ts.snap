@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renderSpyReport reports a zone spied on during the scripted week 1`] = `"Spy report on C3, held by murat-player: 2C"`;

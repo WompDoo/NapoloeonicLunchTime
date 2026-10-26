@@ -1,0 +1,5 @@
+{
+  "napoleon-player": ["support A2 -> B2 1"],
+  "wellington-player": ["move B3 -> B2 2C 2S"],
+  "kutuzov-player": ["move C2 -> C3 3L"]
+}

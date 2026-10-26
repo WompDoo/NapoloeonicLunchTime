@@ -3,6 +3,7 @@ export * from './lib/core/engine-error';
 export * from './lib/core/unit-types';
 export * from './lib/core/unit-counts';
 export * from './lib/core/ordering';
+export * from './lib/core/decode';
 export { seededFraction, seededIndex } from './lib/core/random';
 export * from './lib/map/map-definition';
 export * from './lib/map/map-queries';
