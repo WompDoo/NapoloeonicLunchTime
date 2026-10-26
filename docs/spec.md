@@ -159,15 +159,15 @@ Everyone sees how many units stand in each zone; only spies reveal what those un
 | Scores and honours standings | Everyone |
 | Orders, unused abilities | Owner only, until resolution |
 | Supply amount | Owner only |
-| Battle compositions in the replay | Players in that battle; others see counts and the outcome |
+| Battle compositions in the replay | Players in that battle; others see each side's unit count before and after, and the outcome |
 
 ### Spies
 
 - A spy is an instant daytime action, not an order. It costs supply and is charged immediately.
-- Target: any zone. The report gives that zone's exact composition.
+- Target: any zone except your own. The report gives that zone's exact composition.
 - The world only changes at night, so the report is true for the whole day. It cannot reveal orders.
-- Moore's passive: his skirmishers appear as `unidentified` in spy reports.
-- The Fog event disables spies for that day.
+- Moore's passive: his skirmishers appear as `unidentified` in spy reports: the report counts them, but not their type (e.g. 3 line, 2 unidentified).
+- The Fog event disables spies for that day. It hides unit counts only during the day: the replay of the foggy night shows them as usual, so players can see why they won or lost.
 - Each report is stored in the player's private log; the Spymaster honour counts them.
 
 ### Player views
@@ -469,6 +469,10 @@ v0 is the one-week Points mode on one 4-player map; everything else waits until 
 | 2026-10-26 | The Fox / Saddle Up unit counts | Before bombardment; Saddle Up needs cavalry strictly largest |
 | 2026-10-26 | Battle ended by bombardment | Won by the side left standing |
 | 2026-10-26 | Eliminated players and honours | Eligible |
+| 2026-10-26 | Fog and the replay | Fog hides counts during the day only; the night's replay shows them |
+| 2026-10-26 | Spying on your own zone | Rejected |
+| 2026-10-26 | Moore's unidentified skirmishers | Counted but untyped in the report |
+| 2026-10-26 | Replay for players outside a battle | Each side's unit count before and after, and the outcome |
 
 **Open questions for the playtest:**
 
