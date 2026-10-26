@@ -224,6 +224,12 @@ Points come from holding cities on Wednesday and Friday nights, plus three honou
 - **Elimination:** at the end of every night, a player who owns no city (capitals count) and has no units anywhere is eliminated. Their zones turn neutral and their orders are ignored from then on. Their points still count in the final ranking like anyone else's.
 - **Winner:** highest total after Friday. Tie-breaks in order: more cities held at the end, then fewer own units lost, then a shared victory.
 - **Honours are computed only from the replay log.** They add no rules; each is a query over logged events.
+- **No honour for nothing:** a "most" honour whose best count is 0 is not awarded.
+- **Battles** include head-on clashes. A battle in which bombardment destroys every enemy before combat is won by the side left standing.
+- **Units lost** (Iron Discipline and the winner tie-break) means units lost in battle: in combat, in head-on clashes and to enemy bombardment. Typhus losses don't count, and units saved by Orderly Retreat are not lost.
+- **Butcher's Bill credit:** in a battle someone wins, the winner is credited with every unit the losing sides lost in combat (units saved by retreat excluded); a mutual destruction credits nobody. Bombardment kills are credited to the player whose artillery fired.
+- **The Fox and Saddle Up** count units as they stood before bombardment. Saddle Up needs cavalry to strictly outnumber every other type, artillery included.
+- **Eliminated players** are eligible for honours.
 
 | Honour | Awarded for |
 | --- | --- |
@@ -456,6 +462,13 @@ v0 is the one-week Points mode on one 4-player map; everything else waits until 
 | 2026-10-26 | Ability with no effect | Still used up |
 | 2026-10-26 | Levée en masse without a capital | Lowest-id owned city, else largest army |
 | 2026-10-26 | Elimination | No city and no units at the end of a night; zones turn neutral; points still count |
+| 2026-10-26 | Honours with a best count of 0 | Not awarded |
+| 2026-10-26 | Butcher's Bill credit | Winner gets losers' combat losses (minus retreats); mutual destruction credits nobody; bombardment kills go to the firer |
+| 2026-10-26 | Units lost | Lost in battle: combat, head-on clashes, enemy bombardment; not Typhus; retreats not lost |
+| 2026-10-26 | Head-on clashes | Count as battles for honours |
+| 2026-10-26 | The Fox / Saddle Up unit counts | Before bombardment; Saddle Up needs cavalry strictly largest |
+| 2026-10-26 | Battle ended by bombardment | Won by the side left standing |
+| 2026-10-26 | Eliminated players and honours | Eligible |
 
 **Open questions for the playtest:**
 
