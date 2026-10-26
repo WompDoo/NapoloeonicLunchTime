@@ -1,0 +1,113 @@
+{
+  "id": "v0-four-player",
+  "zones": [
+    {
+      "id": "A1",
+      "kind": "capital"
+    },
+    {
+      "id": "A2",
+      "kind": "plain"
+    },
+    {
+      "id": "A3",
+      "kind": "plain"
+    },
+    {
+      "id": "A4",
+      "kind": "capital"
+    },
+    {
+      "id": "B1",
+      "kind": "plain"
+    },
+    {
+      "id": "B2",
+      "kind": "city"
+    },
+    {
+      "id": "B3",
+      "kind": "city"
+    },
+    {
+      "id": "B4",
+      "kind": "plain"
+    },
+    {
+      "id": "C1",
+      "kind": "plain"
+    },
+    {
+      "id": "C2",
+      "kind": "city"
+    },
+    {
+      "id": "C3",
+      "kind": "city"
+    },
+    {
+      "id": "C4",
+      "kind": "plain"
+    },
+    {
+      "id": "D1",
+      "kind": "capital"
+    },
+    {
+      "id": "D2",
+      "kind": "plain"
+    },
+    {
+      "id": "D3",
+      "kind": "plain"
+    },
+    {
+      "id": "D4",
+      "kind": "capital"
+    }
+  ],
+  "connections": [
+    ["A1", "A2"],
+    ["A2", "A3"],
+    ["A3", "A4"],
+    ["B1", "B2"],
+    ["B2", "B3"],
+    ["B3", "B4"],
+    ["C1", "C2"],
+    ["C2", "C3"],
+    ["C3", "C4"],
+    ["D1", "D2"],
+    ["D2", "D3"],
+    ["D3", "D4"],
+    ["A1", "B1"],
+    ["B1", "C1"],
+    ["C1", "D1"],
+    ["A2", "B2"],
+    ["B2", "C2"],
+    ["C2", "D2"],
+    ["A3", "B3"],
+    ["B3", "C3"],
+    ["C3", "D3"],
+    ["A4", "B4"],
+    ["B4", "C4"],
+    ["C4", "D4"]
+  ],
+  "startingCapitals": [
+    {
+      "seat": 1,
+      "zoneId": "A1"
+    },
+    {
+      "seat": 2,
+      "zoneId": "A4"
+    },
+    {
+      "seat": 3,
+      "zoneId": "D1"
+    },
+    {
+      "seat": 4,
+      "zoneId": "D4"
+    }
+  ]
+}
