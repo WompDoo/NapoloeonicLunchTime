@@ -98,4 +98,13 @@ export const TEST_CONFIG: MatchConfig = {
   upgrades: TEST_UPGRADES,
   commanders: TEST_COMMANDERS,
   events: TEST_EVENTS,
+  honours: {
+    pool: [
+      { id: 'most-units', points: 3 },
+      { id: 'most-zones', points: 3 },
+      { id: 'most-supply', points: 2 },
+      { id: 'fewest-losses', points: 3 },
+    ],
+    drawnPerMatch: 3,
+  },
 };

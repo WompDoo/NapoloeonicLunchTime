@@ -1,6 +1,6 @@
 import type { PlayerId, ZoneId } from '../core/ids';
 import type { UnitCounts, UnitType } from '../core/unit-types';
-import type { BattleResult } from '../combat/battle';
+import type { BattleResult, BattleRole } from '../combat/battle';
 import type { ZoneConnection } from '../map/map-definition';
 import type { AbilityTarget } from '../modifiers/ability-target';
 import type { Order, OrderRejectionReason } from '../orders/orders';
@@ -93,6 +93,26 @@ export interface ReinforcementsJoinedEvent extends ReplayEventBase {
   readonly modifierId: string;
 }
 
+export interface BattleFormedSide {
+  readonly playerId: PlayerId;
+  readonly role: BattleRole;
+  readonly units: UnitCounts;
+}
+
+/** Armies of two or more players met in a zone. Logged before bombardment, with the compositions as they stood. */
+export interface BattleFormedEvent extends ReplayEventBase {
+  readonly type: 'BattleFormed';
+  readonly zoneId: ZoneId;
+  readonly sides: readonly BattleFormedSide[];
+}
+
+/** Bombardment left fewer than two armies, so the battle ends before combat. `null`: nobody is left standing. */
+export interface BattleDecidedByBombardmentEvent extends ReplayEventBase {
+  readonly type: 'BattleDecidedByBombardment';
+  readonly zoneId: ZoneId;
+  readonly survivorId: PlayerId | null;
+}
+
 export interface BombardmentHit {
   readonly playerId: PlayerId;
   readonly unitType: UnitType;
@@ -170,6 +190,27 @@ export interface PlayerEliminatedEvent extends ReplayEventBase {
   readonly playerId: PlayerId;
 }
 
+/** A modifier whose last night has been resolved (an ability or event wearing off). */
+export interface ModifierExpiredEvent extends ReplayEventBase {
+  readonly type: 'ModifierExpired';
+  readonly modifierId: string;
+}
+
+export interface PlayerStanding {
+  readonly playerId: PlayerId;
+  readonly units: number;
+  readonly zonesOwned: number;
+  readonly citiesHeld: number;
+  readonly score: number;
+  readonly eliminated: boolean;
+}
+
+/** Public standings at the end of every night, in seat order. The last one is the final standings. */
+export interface StandingsRecordedEvent extends ReplayEventBase {
+  readonly type: 'StandingsRecorded';
+  readonly standings: readonly PlayerStanding[];
+}
+
 /** Announced the night before the event is active. */
 export interface EventAnnouncedEvent extends ReplayEventBase {
   readonly type: 'EventAnnounced';
@@ -188,7 +229,9 @@ export type ReplayEvent =
   | MoveBouncedEvent
   | FieldBattleEvent
   | ReinforcementsJoinedEvent
+  | BattleFormedEvent
   | BombardmentEvent
+  | BattleDecidedByBombardmentEvent
   | BattleResolvedEvent
   | RetreatedEvent
   | RetreatBlockedEvent
@@ -197,4 +240,6 @@ export type ReplayEvent =
   | SupplyProducedEvent
   | PointsAwardedEvent
   | PlayerEliminatedEvent
-  | EventAnnouncedEvent;
+  | ModifierExpiredEvent
+  | EventAnnouncedEvent
+  | StandingsRecordedEvent;

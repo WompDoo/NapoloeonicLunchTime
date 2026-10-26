@@ -13,6 +13,7 @@ import type {
 } from '@lunch-campaign/engine';
 import { V0_FOUR_PLAYER_MAP } from '../maps/v0-four-player-map';
 import { DEFAULT_COMMANDERS } from '../modifiers/commanders';
+import { DEFAULT_HONOUR_RULES } from './honours';
 import { DEFAULT_EVENTS } from '../modifiers/events';
 import { DEFAULT_UPGRADES } from '../modifiers/upgrades';
 
@@ -131,4 +132,5 @@ export const DEFAULT_MATCH_CONFIG: MatchConfig = {
   upgrades: DEFAULT_UPGRADES,
   commanders: DEFAULT_COMMANDERS,
   events: DEFAULT_EVENTS,
+  honours: DEFAULT_HONOUR_RULES,
 };

@@ -1,4 +1,4 @@
-import { hashSeedLabel, seededFraction, seededIndex } from './random';
+import { hashSeedLabel, mixHash, seededFraction, seededIndex } from './random';
 
 describe('seeded randomness', () => {
   it('is deterministic per label', () => {
@@ -33,7 +33,24 @@ describe('seeded randomness', () => {
   it('never changes its algorithm silently (stored matches depend on it)', () => {
     expect(hashSeedLabel('')).toBe(0x811c9dc5);
     expect(seededIndex('lunch-campaign:event:3', 1000)).toMatchInlineSnapshot(
-      `305`,
+      `383`,
     );
+  });
+});
+
+describe('seeded randomness for similar seeds', () => {
+  it('spreads draws for labels that differ in one character (no clustering for sequential seeds)', () => {
+    const fractions = Array.from({ length: 8 }, (_, index) =>
+      seededFraction(`week-${index}:event:3`),
+    );
+    expect(Math.max(...fractions) - Math.min(...fractions)).toBeGreaterThan(
+      0.5,
+    );
+  });
+
+  it('mixes every input bit into the output', () => {
+    expect(mixHash(0)).toBe(0);
+    expect(mixHash(1)).not.toBe(1);
+    expect(mixHash(1) ^ mixHash(2)).toBeGreaterThan(0xffff);
   });
 });

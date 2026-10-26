@@ -1,0 +1,21 @@
+{
+  "name": "honours",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/honours/src",
+  "projectType": "library",
+  "tags": ["type:honours"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "commands": [
+          "tsc -p {projectRoot}/tsconfig.lib.json --noEmit",
+          "tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+        ],
+        "parallel": false
+      }
+    }
+  }
+}

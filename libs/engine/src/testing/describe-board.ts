@@ -86,6 +86,15 @@ const EVENT_DESCRIBERS: EventDescribers = {
     `  bombard ${event.playerId} ${event.artillery} guns ${event.fromZoneId}->${event.targetZoneId}: ${event.hits
       .map((hit): string => `${hit.playerId}:${hit.unitType}`)
       .join(' ')} blocked ${event.blockedHits} wasted ${event.wastedHits}`,
+  BattleFormed: (event): string =>
+    `  battle formed ${event.zoneId}: ${event.sides
+      .map(
+        (side): string =>
+          `${side.playerId}(${side.role}) ${describeUnits(side.units)}`,
+      )
+      .join(' vs ')}`,
+  BattleDecidedByBombardment: (event): string =>
+    `  decided by bombardment ${event.zoneId}: ${event.survivorId ?? 'nobody'} left standing`,
   BattleResolved: (event): string =>
     `  battle ${event.zoneId}: ${describeBattle(event.battle)}`,
   Retreated: (event): string =>
@@ -101,6 +110,14 @@ const EVENT_DESCRIBERS: EventDescribers = {
   PointsAwarded: (event): string =>
     `  points ${event.playerId} +${event.points} (${event.citiesHeld} cities)`,
   PlayerEliminated: (event): string => `  eliminated ${event.playerId}`,
+  ModifierExpired: (event): string => `  expired ${event.modifierId}`,
+  StandingsRecorded: (event): string =>
+    `  standings ${event.standings
+      .map(
+        (standing): string =>
+          `${standing.playerId}:${standing.units}u/${standing.zonesOwned}z/${standing.citiesHeld}c/${standing.score}p`,
+      )
+      .join(' ')}`,
   EventAnnounced: (event): string =>
     `  event ${event.eventId} announced for turn ${event.activeTurnNumber}`,
 };

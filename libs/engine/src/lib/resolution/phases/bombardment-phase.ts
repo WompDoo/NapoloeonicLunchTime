@@ -4,6 +4,9 @@ import { selectCasualtyType } from '../../combat/casualties';
 import { effectiveParameters } from '../../modifiers/effective-parameters';
 import type { SupportOrder } from '../../orders/orders';
 import type {
+  BattleDecidedByBombardmentEvent,
+  BattleFormedEvent,
+  BattleFormedSide,
   BombardmentEvent,
   BombardmentHit,
 } from '../../replay/replay-events';
@@ -46,10 +49,19 @@ export function applyBombardmentPhase(
   resolution: ResolutionState,
   context: TurnContext,
 ): ResolutionState {
-  const battles = resolution.match.zones
-    .filter((zone): boolean => zone.armies.length >= ARMIES_NEEDED_FOR_BATTLE)
-    .map(describeBattleAtPhaseStart);
-  return context.acceptedOrders
+  const battleZones = resolution.match.zones.filter(
+    (zone): boolean => zone.armies.length >= ARMIES_NEEDED_FOR_BATTLE,
+  );
+  const battles = battleZones.map(describeBattleAtPhaseStart);
+  const formed = appendEvents(
+    resolution,
+    resolution.match,
+    battleZones.map(
+      (zone): BattleFormedEvent =>
+        toBattleFormedEvent(zone, context.turnNumber),
+    ),
+  );
+  const afterFiring = context.acceptedOrders
     .flatMap((accepted): readonly PlacedSupport[] =>
       accepted.supports.map(
         (order): PlacedSupport => ({ playerId: accepted.playerId, order }),
@@ -66,8 +78,45 @@ export function applyBombardmentPhase(
     .reduce(
       (current, [support, battle]): ResolutionState =>
         fireSupport(current, support, battle, context),
-      resolution,
+      formed,
     );
+  return appendEvents(
+    afterFiring,
+    afterFiring.match,
+    battles
+      .map((battle): ZoneState => findZone(afterFiring.match, battle.zoneId))
+      .filter((zone): boolean => zone.armies.length < ARMIES_NEEDED_FOR_BATTLE)
+      .map(
+        (zone): BattleDecidedByBombardmentEvent => ({
+          type: 'BattleDecidedByBombardment',
+          turnNumber: context.turnNumber,
+          zoneId: zone.zoneId,
+          survivorId: soleSurvivor(zone),
+        }),
+      ),
+  );
+}
+
+function toBattleFormedEvent(
+  zone: ZoneState,
+  turnNumber: number,
+): BattleFormedEvent {
+  return {
+    type: 'BattleFormed',
+    turnNumber,
+    zoneId: zone.zoneId,
+    sides: zone.armies.map(
+      (army): BattleFormedSide => ({
+        playerId: army.playerId,
+        role: army.playerId === zone.ownerId ? 'defender' : 'attacker',
+        units: army.units,
+      }),
+    ),
+  };
+}
+
+function soleSurvivor(zone: ZoneState): PlayerId | null {
+  return zone.armies.map((army): PlayerId => army.playerId)[0] ?? null;
 }
 
 function describeBattleAtPhaseStart(zone: ZoneState): BattleAtPhaseStart {

@@ -118,6 +118,7 @@ export function createTestState(options: TestStateOptions): MatchState {
         toZoneState(zone.id, { ...EMPTY_TEST_ZONE, ...zones[zone.id] }),
     ),
     modifiers,
+    honourIds: [],
   };
 }
 

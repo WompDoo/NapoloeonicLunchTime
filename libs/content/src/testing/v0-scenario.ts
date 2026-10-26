@@ -107,6 +107,7 @@ export function createV0State(options: ScenarioOptions): MatchState {
       ),
       ...scenario.extraModifiers,
     ],
+    honourIds: [],
   };
 }
 

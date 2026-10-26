@@ -21,6 +21,7 @@ describe('createInitialMatchState', () => {
     );
 
     expect(state.matchSeed).toBe('seed-1');
+    expect(state.honourIds).toHaveLength(TEST_CONFIG.honours.drawnPerMatch);
     expect(state.turnNumber).toBe(FIRST_TURN_NUMBER);
     expect(
       state.players.map((player) => [

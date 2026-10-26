@@ -55,6 +55,17 @@ export interface OrderRules {
   readonly maxMoveOrdersPerTurn: number;
 }
 
+export interface HonourDefinition {
+  readonly id: string;
+  readonly points: number;
+}
+
+export interface HonourRules {
+  /** The honours a match can draw from. Each is a query over the replay log (libs/honours). */
+  readonly pool: readonly HonourDefinition[];
+  readonly drawnPerMatch: number;
+}
+
 export interface CityPointsScoringRule {
   readonly kind: 'cityPoints';
   readonly pointsPerCity: number;
@@ -86,4 +97,5 @@ export interface MatchConfig {
   readonly commanders: readonly CommanderDefinition[];
   /** The pool one match event is drawn from with the match seed. */
   readonly events: readonly EventDefinition[];
+  readonly honours: HonourRules;
 }

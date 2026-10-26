@@ -5,20 +5,28 @@ import {
   isModifierExpiredAfter,
 } from '../../modifiers/active-modifiers';
 import { drawEventsForTurn } from '../../modifiers/match-events';
-import type { EventAnnouncedEvent } from '../../replay/replay-events';
+import type {
+  EventAnnouncedEvent,
+  ModifierExpiredEvent,
+  PlayerStanding,
+} from '../../replay/replay-events';
+import { totalUnitCount } from '../../core/unit-counts';
 import { activePlayers } from '../../state/active-players';
 import type {
   MatchState,
   PlayerState,
   ZoneState,
 } from '../../state/match-state';
-import { updatePlayer } from '../../state/match-state-queries';
+import {
+  unitsOfPlayerInZone,
+  updatePlayer,
+} from '../../state/match-state-queries';
 import type { ResolutionState, TurnContext } from '../resolution-state';
 import { appendEvents } from '../resolution-state';
 
 /**
  * Eliminates players left with no city and no units, expires modifiers whose last night this was, announces
- * the next night's event, and advances to the next turn.
+ * the next night's event, records the night's standings and advances to the next turn.
  */
 export function applyCleanupPhase(
   resolution: ResolutionState,
@@ -30,21 +38,24 @@ export function applyCleanupPhase(
       (current, player): ResolutionState => eliminate(current, player, context),
       resolution,
     );
+  const match = afterEliminations.match;
   const nextTurnNumber = context.turnNumber + 1;
+  const expired = match.modifiers.filter((modifier): boolean =>
+    isModifierExpiredAfter(modifier, context.turnNumber),
+  );
   const announcedEvents = drawEventsForTurn(
     context.config,
-    resolution.match.matchSeed,
+    match.matchSeed,
     nextTurnNumber,
   );
   return appendEvents(
     afterEliminations,
     {
-      ...afterEliminations.match,
+      ...match,
       turnNumber: nextTurnNumber,
       modifiers: [
-        ...afterEliminations.match.modifiers.filter(
-          (modifier): boolean =>
-            !isModifierExpiredAfter(modifier, context.turnNumber),
+        ...match.modifiers.filter(
+          (modifier): boolean => !expired.includes(modifier),
         ),
         ...announcedEvents.map(
           (event): ActiveModifier =>
@@ -52,15 +63,55 @@ export function applyCleanupPhase(
         ),
       ],
     },
-    announcedEvents.map(
-      (event): EventAnnouncedEvent => ({
-        type: 'EventAnnounced',
+    [
+      ...expired.map(
+        (modifier): ModifierExpiredEvent => ({
+          type: 'ModifierExpired',
+          turnNumber: context.turnNumber,
+          modifierId: modifier.id,
+        }),
+      ),
+      ...announcedEvents.map(
+        (event): EventAnnouncedEvent => ({
+          type: 'EventAnnounced',
+          turnNumber: context.turnNumber,
+          eventId: event.id,
+          activeTurnNumber: nextTurnNumber,
+        }),
+      ),
+      {
+        type: 'StandingsRecorded',
         turnNumber: context.turnNumber,
-        eventId: event.id,
-        activeTurnNumber: nextTurnNumber,
-      }),
-    ),
+        standings: match.players.map(
+          (player): PlayerStanding => standingOf(match, player, context),
+        ),
+      },
+    ],
   );
+}
+
+function standingOf(
+  state: MatchState,
+  player: PlayerState,
+  context: TurnContext,
+): PlayerStanding {
+  const ownedZones = state.zones.filter(
+    (zone): boolean => zone.ownerId === player.playerId,
+  );
+  return {
+    playerId: player.playerId,
+    units: state.zones.reduce(
+      (total, zone): number =>
+        total + totalUnitCount(unitsOfPlayerInZone(zone, player.playerId)),
+      0,
+    ),
+    zonesOwned: ownedZones.length,
+    citiesHeld: ownedZones.filter((zone): boolean =>
+      isCityZone(context.config.map, zone.zoneId),
+    ).length,
+    score: player.score,
+    eliminated: player.eliminated,
+  };
 }
 
 /** A player who owns no city (capitals count) and has no units anywhere is out of the game. */

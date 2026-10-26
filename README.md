@@ -8,16 +8,17 @@ the day and resolve simultaneously overnight; a match lasts one working week.
 
 ## Projects
 
-| Project        | Contents                                                                            |
-| -------------- | ----------------------------------------------------------------------------------- |
-| `libs/engine`  | Pure, deterministic rules engine: map loading, combat, modifiers, `resolveTurn`     |
-| `libs/content` | Data only: the default `MatchConfig`, the v0 map JSON, upgrades, commanders, events |
+| Project        | Contents                                                                                     |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| `libs/engine`  | Pure, deterministic rules engine: map loading, combat, modifiers, `resolveTurn`              |
+| `libs/content` | Data only: the default `MatchConfig`, the v0 map JSON, upgrades, commanders, events, honours |
+| `libs/honours` | The 12 honours as queries over the replay log, and final scoring with tie-breaks             |
 
 Upgrades, commander passives and abilities, and events are all **modifiers**: plain data that patches the
 parameters the engine reads, or adds a named step to a resolution phase. The engine never asks "is this Napoleon?";
 it asks for a player's effective parameters tonight. A new event needs data and, at most, one new phase-step action.
 
-Dependencies point one way: `content → engine`. The engine never imports content (enforced by
+Dependencies point one way: `honours → content → engine` (honours may also read the engine directly). The engine never imports content (enforced by
 `@nx/enforce-module-boundaries`), and engine tests use their own fixtures so playtest tuning never breaks them.
 
 ## Commands

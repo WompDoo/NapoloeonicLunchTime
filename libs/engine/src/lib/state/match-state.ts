@@ -43,4 +43,6 @@ export interface MatchState {
   readonly zones: readonly ZoneState[];
   /** Upgrades, commander passives and abilities, and events in play, including ones announced for later. */
   readonly modifiers: readonly ActiveModifier[];
+  /** The honours this match awards, drawn at creation and public from the start. */
+  readonly honourIds: readonly string[];
 }

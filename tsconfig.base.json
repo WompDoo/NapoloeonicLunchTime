@@ -22,7 +22,8 @@
     "esModuleInterop": true,
     "paths": {
       "@lunch-campaign/engine": ["./libs/engine/src/index.ts"],
-      "@lunch-campaign/content": ["./libs/content/src/index.ts"]
+      "@lunch-campaign/content": ["./libs/content/src/index.ts"],
+      "@lunch-campaign/honours": ["./libs/honours/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

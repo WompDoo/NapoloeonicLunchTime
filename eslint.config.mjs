@@ -27,6 +27,10 @@ export default [
               sourceTag: 'type:content',
               onlyDependOnLibsWithTags: ['type:engine'],
             },
+            {
+              sourceTag: 'type:honours',
+              onlyDependOnLibsWithTags: ['type:engine', 'type:content'],
+            },
           ],
         },
       ],

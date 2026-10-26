@@ -102,6 +102,14 @@ describe('default match config', () => {
     ).toEqual(Array(16).fill(1));
   });
 
+  it('offers 12 honours worth 3 points each, 3 drawn per match', () => {
+    expect(DEFAULT_MATCH_CONFIG.honours.pool).toHaveLength(12);
+    expect(
+      DEFAULT_MATCH_CONFIG.honours.pool.every((honour) => honour.points === 3),
+    ).toBe(true);
+    expect(DEFAULT_MATCH_CONFIG.honours.drawnPerMatch).toBe(3);
+  });
+
   it('lists every unit type exactly once in the casualty removal order', () => {
     expect(DEFAULT_COMBAT_RULES.casualtyRemovalOrder.flat().toSorted()).toEqual(
       [...UNIT_TYPES].sort(),

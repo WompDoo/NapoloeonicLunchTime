@@ -11,6 +11,7 @@ import {
   createEventModifier,
 } from '../modifiers/active-modifiers';
 import { drawEventsForTurn } from '../modifiers/match-events';
+import { drawHonourIds } from './draw-honours';
 import type { MatchState, PlayerState, ZoneState } from './match-state';
 
 export const FIRST_TURN_NUMBER = 1;
@@ -39,6 +40,7 @@ export function createInitialMatchState(
   return {
     matchSeed,
     turnNumber: FIRST_TURN_NUMBER,
+    honourIds: drawHonourIds(config, matchSeed),
     players,
     zones: config.map.zones.map(
       (zone): ZoneState =>

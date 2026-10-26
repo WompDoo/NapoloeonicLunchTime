@@ -22,6 +22,8 @@ log:
   moved p1 L3C2S1 A2->B2
   moved p3 C4 C2->B2
   moved p4 L2 C3->C2
+  battle formed B2: p1(attacker) L3C2S1 vs p2(defender) L3S2 vs p3(attacker) C4
+  battle formed C2: p3(defender) A1 vs p4(attacker) L2
   bombard p2 2 guns B3->B2: p1:line p1:line blocked 0 wasted 0
   bombard p3 1 guns C2->B2:  blocked 4 wasted 0
   battle B2: p1(attacker) L1C2S1 S=5.222 -> - vs p2(defender) L3S2 S=12.000 -> L1S1 vs p3(attacker) C4 S=5.333 -> -; winner p2
@@ -32,5 +34,8 @@ log:
   produced p2 +3
   produced p3 +0
   produced p4 +4
-  eliminated p3"
+  eliminated p3
+  expired ability:warden:p2:2
+  expired ability:gunner:p3:2
+  standings p1:7u/3z/1c/0p p2:4u/2z/1c/0p p3:0u/0z/0c/0p p4:1u/2z/1c/0p"
 `;

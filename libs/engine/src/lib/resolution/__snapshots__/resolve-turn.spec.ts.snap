@@ -24,6 +24,8 @@ log:
   moved p4 C2 C2->B2
   moved p4 L2 C2->C1
   field C1-C2: p3(attacker) L2 S=2.000 -> - vs p4(attacker) L2 S=2.000 -> -; mutual destruction
+  battle formed A2: p1(defender) S1 vs p2(attacker) C1
+  battle formed B2: p1(attacker) L3 vs p2(attacker) C4 vs p3(defender) S2 vs p4(attacker) C2
   battle A2: p1(defender) S1 S=1.250 -> - vs p2(attacker) C1 S=2.000 -> C1; winner p2
   battle B2: p1(attacker) L3 S=5.250 -> L1 vs p2(attacker) C4 S=5.143 -> - vs p3(defender) S2 S=3.333 -> - vs p4(attacker) C2 S=2.444 -> -; winner p1
   captured A2 by p2 from p1
@@ -35,7 +37,8 @@ log:
   points p1 +6 (2 cities)
   points p2 +3 (1 cities)
   points p3 +3 (1 cities)
-  points p4 +3 (1 cities)"
+  points p4 +3 (1 cities)
+  standings p1:6u/2z/2c/6p p2:2u/3z/1c/3p p3:0u/1z/1c/3p p4:1u/2z/1c/3p"
 `;
 
 exports[`resolveTurn resolves the opening night (snapshot) 1`] = `
@@ -62,6 +65,8 @@ log:
   moved p2 C2S2 A3->A2
   moved p3 L3 C1->B1
   moved p3 A1 C1->C2
+  battle formed A2: p1(attacker) L2C2 vs p2(attacker) C2S2
+  battle formed B1: p1(attacker) S1 vs p3(attacker) L3
   battle A2: p1(attacker) L2C2 S=6.000 -> C1 vs p2(attacker) C2S2 S=5.000 -> -; winner p1
   battle B1: p1(attacker) S1 S=2.000 -> - vs p3(attacker) L3 S=3.000 -> L2; winner p3
   captured A2 by p1 from neutral
@@ -70,5 +75,6 @@ log:
   produced p1 +4
   produced p2 +3
   produced p3 +5
-  produced p4 +3"
+  produced p4 +3
+  standings p1:5u/2z/1c/0p p2:6u/1z/1c/0p p3:7u/3z/1c/0p p4:8u/1z/1c/0p"
 `;
