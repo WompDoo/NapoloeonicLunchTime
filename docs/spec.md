@@ -80,7 +80,7 @@ Orders are written during the day and can be edited until the deadline. The last
 | --- | --- | --- |
 | Recruit | New units appear at your capital in the purchase phase | They defend that night but cannot move. Only possible while you own your starting capital; captured enemy capitals score and produce but never recruit |
 | Move | A group of units moves to an adjacent zone. Into your own zone = reinforce; into neutral or enemy = attack | Max 5 move orders per day |
-| Support | Artillery in a zone bombards an adjacent zone if a battle involving you happens there | Artillery that moves cannot support |
+| Support | Artillery in a zone bombards an adjacent zone if a battle involving you happens there. The order names how many artillery and the target zone, so a zone's artillery can be split across targets | Artillery that moves cannot support. Support orders don't count toward the move limit. Artillery whose own zone is attacked still supports, and still fights at home |
 | Buy upgrade | Permanent upgrade, active from the purchase phase | Each upgrade once per match |
 | Use ability | Your commander's one-time ability, with its target | Once per match |
 
@@ -98,6 +98,11 @@ Each night, one pure function applies every player's orders through a fixed sequ
    - No defender present (e.g. two players enter an empty neutral zone) = a battle with no defender bonus.
 3. **Reinforcement.** Core does nothing here; modifier hooks only (e.g. Marschall Vorwärts).
 4. **Bombardment.** Each supporting artillery removes units from an enemy army in its target battle before combat. When its owner attacks, it hits the defender. When its owner defends, it hits the largest attacking army (tie: lowest seat). Artillery that fires is revealed, with its zone and count, to every player in that battle.
+   - Units hit by bombardment are removed in the normal removal order (most numerous combat type first, artillery last).
+   - Each hit is aimed separately: a defender's artillery hits whichever attacking army is largest at that moment, so damage spreads as armies shrink.
+   - In a battle with no defender, artillery hits the largest enemy army at that moment (tie: lowest seat).
+   - Hits aimed at a defender that is already destroyed are wasted; they never switch to another army.
+   - All artillery present at the start of the phase fires, even if bombardment removes it before its turn. Players fire in seat order.
 5. **Combat.** Resolve every battle with the formula below.
 6. **Capture.** The surviving side owns the zone.
 7. **Production.** Apply production-phase hooks (e.g. Typhus), then add supply for each owned zone.
@@ -125,6 +130,8 @@ S_A = \left(\sum_{u} n_A(u)\, b(u) \sum_{t} \frac{n_E(t)}{N_E}\, \mathrm{off}_A[
 - **Removal order:** units are removed one at a time, each from the combat type that is most numerous at that moment; ties broken in the fixed order line, skirmishers, cavalry; artillery last. Example: 5 line + 4 cavalry losing 3 → 3 line + 3 cavalry.
 - **Tied leaders without the defender:** if the highest S is shared and the defender is not among the tied sides, all tied sides are destroyed and every other side, having lost, is destroyed too. The zone ends up empty and keeps its previous owner.
 - **Losers** are destroyed, artillery included. With Orderly Retreat, one unit of each combat type present survives and retreats to an adjacent zone the loser owns (lowest zone id). No such zone = destroyed.
+  - A retreat can't enter a battle area: a zone with a battle tonight, or one holding another player's units. If every owned adjacent zone is a battle area, the retreating units are destroyed.
+  - Orderly Retreat applies to every side that doesn't win, including mutual destruction on a tie. It doesn't apply in head-on clashes: their losers are always destroyed.
 - **Multi-way battles** use the same rule: highest S wins; every other side loses.
 
 ### Counters versus numbers
@@ -183,15 +190,15 @@ Upgrades are public, permanent and bought once each. They bend the triangle rath
 
 ### Commanders
 
-Each player picks a commander before the match. Picks are simultaneous, duplicates are allowed, and all picks are revealed together. The ability is used once per match, stays hidden until resolution and is revealed in the replay.
+Each player picks a commander before the match. Picks are simultaneous, duplicates are allowed, and all picks are revealed together. The ability is used once per match, stays hidden until resolution and is revealed in the replay. An ability whose condition isn't met that night (for example, no battle to join) is still used up.
 
 | Commander | Passive | One-time ability |
 | --- | --- | --- |
 | Napoleon | Artillery bombards +1 unit | **Grand Battery:** all your artillery bombards twice tonight |
-| Wellington | Defender bonus +10% | **Reverse Slope:** one owned zone takes no bombardment and its defender bonus is doubled tonight |
-| Murat | Cavalry may move 2 zones, through owned or empty zones only | **Grand Charge:** tonight, no defender bonus applies in battles where you attack with cavalry |
-| Blücher | Your attacking armies +10% strength | **Marschall Vorwärts:** in the reinforcement phase, one of your armies that held joins a battle in an adjacent zone where you attack or defend |
-| Kutuzov | Orderly Retreat always active, no purchase needed | **Scorched Earth:** one owned zone produces nothing, for whoever holds it, for the next 2 production phases |
+| Wellington | Defender bonus +10% | **Reverse Slope:** one owned zone takes no bombardment and its defender bonus is doubled tonight. Only the base defender bonus doubles (25% → 50%, then Wellington's +10% on top = 60%). Only enemy bombardment is blocked; Wellington's own artillery still fires into that zone |
+| Murat | Cavalry may move 2 zones, through owned or empty zones only. The middle zone is checked against the state when orders are given; the move then resolves under the normal rules | **Grand Charge:** tonight, no defender bonus applies in battles where you attack with cavalry |
+| Blücher | Your attacking armies +10% strength, head-on clashes included | **Marschall Vorwärts:** in the reinforcement phase, one of your armies that held joins a battle in an adjacent zone where you attack or defend. It can send part of the army, but only from a zone with no battle of its own tonight |
+| Kutuzov | Orderly Retreat always active, no purchase needed | **Scorched Earth:** one owned zone produces nothing, for whoever holds it, for the next 2 production phases: tonight's and tomorrow's |
 | Sir John Moore | Your skirmishers appear as `unidentified` in spy reports | **Ambush:** tonight your skirmishers deal double damage to cavalry and take normal damage from cavalry |
 
 Reserve commanders for later: Schulmeister (spies), Archduke Charles, Ney.
@@ -204,9 +211,9 @@ One event per match is drawn from the pool using the match seed. It is announced
 | --- | --- | --- |
 | Mud | Cavalry loses its counter bonus; artillery cannot move | Parameter patch |
 | Fog | Spies unavailable; unit counts hidden in player views for the day | View and spy rules |
-| Typhus | Each player's largest single-zone army loses 20% (rounded down, minimum 1 if the army has 2+ units) | Production hook |
-| Levée en masse | Each player gets free line infantry at their capital | Purchase hook |
-| Armistice | No combat or bombardment; moves into zones held or occupied by others bounce back | Movement and combat patch |
+| Typhus | Each player's largest single-zone army loses 20% (rounded down, minimum 1 if the army has 2+ units). Losses follow the removal order; if two of a player's armies tie for largest, the one in the lowest zone id is hit | Production hook |
+| Levée en masse | Each player gets free line infantry at their capital. Without their starting capital, at the lowest-id city they own (captured capitals count); with no city, joining their largest army (tie: lowest zone id) | Purchase hook |
+| Armistice | No combat or bombardment; moves into zones held or occupied by others bounce back. Two players moving into the same empty neutral zone both bounce | Movement and combat patch |
 
 ## Scoring and honours
 
@@ -214,6 +221,7 @@ Points come from holding cities on Wednesday and Friday nights, plus three honou
 
 - **City points:** each city held (capitals included) after Wednesday's resolution scores the Wednesday value; after Friday's, the Friday value (double). "Held" means owned: an empty city you own still scores.
 - **Honours:** 3 drawn from the pool of 12 with the match seed at match creation, revealed before Monday. Each is worth a fixed number of points. Tied players each get the full points.
+- **Elimination:** at the end of every night, a player who owns no city (capitals count) and has no units anywhere is eliminated. Their zones turn neutral and their orders are ignored from then on. Their points still count in the final ranking like anyone else's.
 - **Winner:** highest total after Friday. Tie-breaks in order: more cities held at the end, then fewer own units lost, then a shared victory.
 - **Honours are computed only from the replay log.** They add no rules; each is a query over logged events.
 
@@ -431,6 +439,23 @@ v0 is the one-week Points mode on one 4-player map; everything else waits until 
 | 2026-10-26 | Recruiting without your capital | Invalid while you don't own your starting capital |
 | 2026-10-26 | Unaffordable purchases at resolution | Processed in submission order; unaffordable ones are skipped and logged |
 | 2026-10-26 | "City held" for scoring | Held = owned, even when empty |
+| 2026-10-26 | Bombardment victims | Normal removal order |
+| 2026-10-26 | Defender's artillery target | Each hit re-checks the largest attacking army |
+| 2026-10-26 | Artillery in a battle with no defender | Hits the largest enemy army |
+| 2026-10-26 | Overkill on a defender | Extra hits are wasted |
+| 2026-10-26 | Artillery whose zone is attacked | Still supports, and still fights at home |
+| 2026-10-26 | Support orders | Name a count and a target; split allowed |
+| 2026-10-26 | Blücher passive | Applies in head-on clashes |
+| 2026-10-26 | Murat's 2-zone move | Middle zone checked when ordering; normal resolution after |
+| 2026-10-26 | Marschall Vorwärts | Part of an army; only from a zone with no battle tonight |
+| 2026-10-26 | Reverse Slope with Wellington | Base bonus doubled, then +10% (60%); own artillery still fires |
+| 2026-10-26 | Orderly Retreat | Not into battle areas; not in head-on clashes; applies on mutual destruction |
+| 2026-10-26 | Typhus | Removal order; tie between a player's armies → lowest zone id |
+| 2026-10-26 | Armistice contested entry | Both bounce |
+| 2026-10-26 | Scorched Earth | Tonight and tomorrow |
+| 2026-10-26 | Ability with no effect | Still used up |
+| 2026-10-26 | Levée en masse without a capital | Lowest-id owned city, else largest army |
+| 2026-10-26 | Elimination | No city and no units at the end of a night; zones turn neutral; points still count |
 
 **Open questions for the playtest:**
 
