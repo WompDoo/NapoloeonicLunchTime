@@ -4,9 +4,9 @@ import type { OrderRejection, PlayerOrders } from '../orders/orders';
 import { validateTurnOrders } from '../orders/validate-orders';
 import type { OrderRejectedEvent, ReplayEvent } from '../replay/replay-events';
 import type { MatchState } from '../state/match-state';
-import { CORE_PHASE_STEPS } from './core-phase-steps';
+import { RESOLUTION_ORDER } from './resolution-phases';
 import type { ResolutionState, TurnContext } from './resolution-state';
-import { RESOLUTION_ORDER } from './resolution-state';
+import { runPhase } from './run-phase';
 
 export interface TurnResult {
   readonly state: MatchState;
@@ -15,7 +15,8 @@ export interface TurnResult {
 
 /**
  * Resolves one night: validates every player's orders against the current state, then runs the phases in
- * `RESOLUTION_ORDER`. Pure and deterministic: the same inputs always give the same output.
+ * `RESOLUTION_ORDER`, each with its core step and the steps active modifiers add. Pure and deterministic:
+ * the same inputs always give the same output.
  */
 export function resolveTurn(
   state: MatchState,
@@ -39,7 +40,7 @@ export function resolveTurn(
   };
   const resolved = RESOLUTION_ORDER.reduce(
     (resolution, phase): ResolutionState =>
-      CORE_PHASE_STEPS[phase](resolution, context),
+      runPhase(resolution, phase, context),
     initial,
   );
   return { state: resolved.match, replayLog: resolved.replayLog };

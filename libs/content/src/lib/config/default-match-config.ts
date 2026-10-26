@@ -1,7 +1,10 @@
 import type {
+  BombardmentRules,
   CombatRules,
   EconomyRules,
+  IntelligenceRules,
   MatchConfig,
+  MovementRules,
   MultiplierMatrix,
   OrderRules,
   TurnScheduleEntry,
@@ -9,6 +12,9 @@ import type {
   UnitTypeRecord,
 } from '@lunch-campaign/engine';
 import { V0_FOUR_PLAYER_MAP } from '../maps/v0-four-player-map';
+import { DEFAULT_COMMANDERS } from '../modifiers/commanders';
+import { DEFAULT_EVENTS } from '../modifiers/events';
+import { DEFAULT_UPGRADES } from '../modifiers/upgrades';
 
 /*
  * Default tuning values from docs/spec.md ("Default tuning values"). These are starting guesses for the
@@ -63,6 +69,23 @@ export const DEFAULT_ECONOMY_RULES: EconomyRules = {
   startingSupply: 6,
   productionByZoneKind: { plain: 1, city: 2, capital: 3 },
   recruitCost: { line: 2, cavalry: 3, skirmishers: 2, artillery: 4 },
+  upgradeCost: 6,
+};
+
+/** Bombardment damage: 1 unit per artillery, one volley a night. */
+export const DEFAULT_BOMBARDMENT_RULES: BombardmentRules = {
+  hitsPerArtillery: 1,
+  volleysPerNight: 1,
+};
+
+/** Every unit type moves one zone per order; commanders and events change this. */
+export const DEFAULT_MOVEMENT_RULES: MovementRules = {
+  moveRange: { line: 1, cavalry: 1, skirmishers: 1, artillery: 1 },
+};
+
+export const DEFAULT_INTELLIGENCE_RULES: IntelligenceRules = {
+  spiesAvailable: true,
+  unitCountsVisible: true,
 };
 
 export const DEFAULT_STARTING_UNITS: UnitCounts = {
@@ -74,13 +97,24 @@ export const DEFAULT_STARTING_UNITS: UnitCounts = {
 
 export const DEFAULT_ORDER_RULES: OrderRules = { maxMoveOrdersPerTurn: 5 };
 
-/** One working week: five resolutions, Monday to Friday. City points on Wednesday (×1) and Friday (×2). */
+/**
+ * One working week: five resolutions, Monday to Friday. City points on Wednesday (×1) and Friday (×2).
+ * The match event is announced at Tuesday's resolution and active on Wednesday.
+ */
 export const ONE_WEEK_SCHEDULE: readonly TurnScheduleEntry[] = [
-  { label: 'Monday', scoring: [] },
-  { label: 'Tuesday', scoring: [] },
-  { label: 'Wednesday', scoring: [{ kind: 'cityPoints', pointsPerCity: 3 }] },
-  { label: 'Thursday', scoring: [] },
-  { label: 'Friday', scoring: [{ kind: 'cityPoints', pointsPerCity: 6 }] },
+  { label: 'Monday', scoring: [], eventActive: false },
+  { label: 'Tuesday', scoring: [], eventActive: false },
+  {
+    label: 'Wednesday',
+    scoring: [{ kind: 'cityPoints', pointsPerCity: 3 }],
+    eventActive: true,
+  },
+  { label: 'Thursday', scoring: [], eventActive: false },
+  {
+    label: 'Friday',
+    scoring: [{ kind: 'cityPoints', pointsPerCity: 6 }],
+    eventActive: false,
+  },
 ];
 
 /** v0: one-week Points mode on the 4-player map. */
@@ -89,6 +123,12 @@ export const DEFAULT_MATCH_CONFIG: MatchConfig = {
   startingUnits: DEFAULT_STARTING_UNITS,
   economy: DEFAULT_ECONOMY_RULES,
   combat: DEFAULT_COMBAT_RULES,
+  bombardment: DEFAULT_BOMBARDMENT_RULES,
+  movement: DEFAULT_MOVEMENT_RULES,
+  intelligence: DEFAULT_INTELLIGENCE_RULES,
   orders: DEFAULT_ORDER_RULES,
   schedule: ONE_WEEK_SCHEDULE,
+  upgrades: DEFAULT_UPGRADES,
+  commanders: DEFAULT_COMMANDERS,
+  events: DEFAULT_EVENTS,
 };

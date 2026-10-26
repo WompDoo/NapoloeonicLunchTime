@@ -78,3 +78,27 @@ export function findStartingCapital(
     `starting capital for seat ${seat} on map ${map.id}`,
   );
 }
+
+/** Zones connected to the zone, in zone id order. */
+export function adjacentZoneIds(
+  map: MapDefinition,
+  zoneId: ZoneId,
+): readonly ZoneId[] {
+  return map.zones
+    .map((zone): ZoneId => zone.id)
+    .filter((candidate): boolean => areZonesAdjacent(map, zoneId, candidate));
+}
+
+/** One step of a route, from the first zone to the second. */
+export type RouteLeg = readonly [ZoneId, ZoneId];
+
+export function routeLegs(route: readonly ZoneId[]): readonly RouteLeg[] {
+  return route
+    .slice(1)
+    .map(
+      (toZoneId, index): RouteLeg => [
+        requirePresent(route[index], 'route zone'),
+        toZoneId,
+      ],
+    );
+}

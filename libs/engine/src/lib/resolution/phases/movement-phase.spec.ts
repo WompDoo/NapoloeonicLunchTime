@@ -63,6 +63,7 @@ describe('movement phase', () => {
         turnNumber: 1,
         playerId: P1,
         fromZoneId: 'A1',
+        viaZoneIds: [],
         toZoneId: 'A2',
         units: expect.objectContaining({ line: 2 }),
       },

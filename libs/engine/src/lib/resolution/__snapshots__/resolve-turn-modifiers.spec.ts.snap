@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`resolveTurn with modifiers resolves a busy night: upgrade, ability, support, bombardment, retreat (snapshot) 1`] = `
+"turn 3
+p1 seat 1 supply 11 score 0
+p2 seat 2 supply 9 score 0
+p3 seat 3 supply 6 score 0
+p4 seat 4 supply 10 score 0
+A1 capital p1  p1:L2A2
+A2 plain   p1  p1:L1C1S1
+A3 capital --
+B1 plain   p1
+B2 city    p2  p2:L1S1
+B3 plain   p2  p2:A2
+C1 capital --
+C2 plain   p4  p4:L1
+C3 capital p4
+log:
+  upgrade p1 retreat for 6
+  ability p2 hold (ownedZone)
+  ability p3 barrage (none)
+  moved p1 L3C2S1 A2->B2
+  moved p3 C4 C2->B2
+  moved p4 L2 C3->C2
+  bombard p2 2 guns B3->B2: p1:line p1:line blocked 0 wasted 0
+  bombard p3 1 guns C2->B2:  blocked 4 wasted 0
+  battle B2: p1(attacker) L1C2S1 S=5.222 -> - vs p2(defender) L3S2 S=12.000 -> L1S1 vs p3(attacker) C4 S=5.333 -> -; winner p2
+  retreated p1 L1C1S1 B2->A2
+  battle C2: p3(defender) A1 S=0.625 -> - vs p4(attacker) L2 S=2.000 -> L1; winner p4
+  captured C2 by p4 from p3
+  produced p1 +5
+  produced p2 +3
+  produced p3 +0
+  produced p4 +4
+  eliminated p3"
+`;

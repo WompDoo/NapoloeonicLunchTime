@@ -8,10 +8,9 @@ import type {
 
 export type BattleRole = 'defender' | 'attacker';
 
-export type StrengthBonusSource = 'defender';
-
 export interface StrengthBonus {
-  readonly source: StrengthBonusSource;
+  /** `defender` for the base defender bonus, otherwise the id of the modifier that grants it. */
+  readonly source: string;
   /** Fraction added to strength, e.g. 0.25 for +25%. Bonuses on one side add up. */
   readonly value: number;
 }

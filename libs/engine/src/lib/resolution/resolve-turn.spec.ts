@@ -18,15 +18,15 @@ import {
   zoneId,
 } from '../../testing/test-state';
 import { isMatchFinished, resolveTurn } from './resolve-turn';
-import { RESOLUTION_ORDER } from './resolution-state';
+import { RESOLUTION_ORDER } from './resolution-phases';
 
 const OPENING_STATE = createInitialMatchState(
   TEST_CONFIG,
   [
-    { playerId: P1, seat: 1 },
-    { playerId: P2, seat: 2 },
-    { playerId: P3, seat: 3 },
-    { playerId: P4, seat: 4 },
+    { playerId: P1, seat: 1, commanderId: 'plain' },
+    { playerId: P2, seat: 2, commanderId: 'plain' },
+    { playerId: P3, seat: 3, commanderId: 'plain' },
+    { playerId: P4, seat: 4, commanderId: 'plain' },
   ],
   'opening-seed',
 );

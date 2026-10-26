@@ -66,18 +66,43 @@ const EVENT_DESCRIBERS: EventDescribers = {
     `  rejected ${event.playerId} order #${event.orderIndex} (${event.order.kind}): ${event.reason}`,
   UnitsRecruited: (event): string =>
     `  recruited ${event.playerId} ${event.count} ${event.unitType} at ${event.zoneId} for ${event.cost}`,
+  UpgradeBought: (event): string =>
+    `  upgrade ${event.playerId} ${event.upgradeId} for ${event.cost}`,
+  AbilityUsed: (event): string =>
+    `  ability ${event.playerId} ${event.abilityId} (${event.target.kind})`,
+  AbilityHadNoEffect: (event): string =>
+    `  ability had no effect: ${event.playerId} ${event.modifierId}`,
+  UnitsGranted: (event): string =>
+    `  granted ${event.playerId} ${describeUnits(event.units)} at ${event.zoneId} by ${event.modifierId}`,
   ArmyMoved: (event): string =>
-    `  moved ${event.playerId} ${describeUnits(event.units)} ${event.fromZoneId}->${event.toZoneId}`,
+    `  moved ${event.playerId} ${describeUnits(event.units)} ${[event.fromZoneId, ...event.viaZoneIds, event.toZoneId].join('->')}`,
+  MoveBounced: (event): string =>
+    `  bounced ${event.playerId} ${describeUnits(event.units)} ${event.fromZoneId}->${event.toZoneId}`,
   FieldBattle: (event): string =>
     `  field ${event.connection.join('-')}: ${describeBattle(event.battle)}`,
+  ReinforcementsJoined: (event): string =>
+    `  joined ${event.playerId} ${describeUnits(event.units)} ${event.fromZoneId}->${event.toZoneId}`,
+  Bombardment: (event): string =>
+    `  bombard ${event.playerId} ${event.artillery} guns ${event.fromZoneId}->${event.targetZoneId}: ${event.hits
+      .map((hit): string => `${hit.playerId}:${hit.unitType}`)
+      .join(' ')} blocked ${event.blockedHits} wasted ${event.wastedHits}`,
   BattleResolved: (event): string =>
     `  battle ${event.zoneId}: ${describeBattle(event.battle)}`,
+  Retreated: (event): string =>
+    `  retreated ${event.playerId} ${describeUnits(event.units)} ${event.fromZoneId}->${event.toZoneId}`,
+  RetreatBlocked: (event): string =>
+    `  retreat blocked ${event.playerId} ${describeUnits(event.units)} at ${event.zoneId}`,
   ZoneCaptured: (event): string =>
     `  captured ${event.zoneId} by ${event.newOwnerId} from ${event.previousOwnerId ?? 'neutral'}`,
+  UnitsLostToModifier: (event): string =>
+    `  lost ${event.playerId} ${describeUnits(event.units)} at ${event.zoneId} to ${event.modifierId}`,
   SupplyProduced: (event): string =>
     `  produced ${event.playerId} +${event.amount}`,
   PointsAwarded: (event): string =>
     `  points ${event.playerId} +${event.points} (${event.citiesHeld} cities)`,
+  PlayerEliminated: (event): string => `  eliminated ${event.playerId}`,
+  EventAnnounced: (event): string =>
+    `  event ${event.eventId} announced for turn ${event.activeTurnNumber}`,
 };
 
 function describeEvent(event: ReplayEvent): string {

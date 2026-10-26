@@ -11,6 +11,7 @@ import {
   recruitOrder,
 } from '../../testing/test-state';
 import type { Order, OrderRejectionReason } from './orders';
+import { baseParameters } from '../modifiers/parameters';
 import { recruitOrderCost, validateTurnOrders } from './validate-orders';
 
 const STATE = createTestState({
@@ -54,6 +55,9 @@ describe('validateTurnOrders', () => {
       playerId: P1,
       recruits: [orders[1], orders[3]],
       moves: [orders[0], orders[2]],
+      supports: [],
+      upgrades: [],
+      abilities: [],
     });
   });
 
@@ -267,6 +271,8 @@ describe('validateTurnOrders', () => {
   });
 
   it('prices recruit orders from the config', () => {
-    expect(recruitOrderCost(recruitOrder('cavalry', 2), TEST_CONFIG)).toBe(6);
+    expect(
+      recruitOrderCost(recruitOrder('cavalry', 2), baseParameters(TEST_CONFIG)),
+    ).toBe(6);
   });
 });

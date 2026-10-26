@@ -82,6 +82,7 @@ describe('scoring phase', () => {
       schedule: [
         {
           label: 'Double',
+          eventActive: false,
           scoring: [
             { kind: 'cityPoints', pointsPerCity: 1 },
             { kind: 'cityPoints', pointsPerCity: 10 },

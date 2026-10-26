@@ -1,6 +1,7 @@
 import type { CombatRules, MatchConfig } from '../lib/config/match-config';
 import { createUnitCounts } from '../lib/core/unit-counts';
 import type { MultiplierMatrix } from '../lib/core/unit-types';
+import { TEST_COMMANDERS, TEST_EVENTS, TEST_UPGRADES } from './test-content';
 import { TEST_MAP } from './test-map';
 
 const NEUTRAL = 1;
@@ -70,14 +71,31 @@ export const TEST_CONFIG: MatchConfig = {
     startingSupply: 6,
     productionByZoneKind: { plain: 1, city: 2, capital: 3 },
     recruitCost: { line: 2, cavalry: 3, skirmishers: 2, artillery: 4 },
+    upgradeCost: 6,
   },
   combat: TEST_COMBAT_RULES,
+  bombardment: { hitsPerArtillery: 1, volleysPerNight: 1 },
+  movement: {
+    moveRange: { line: 1, cavalry: 1, skirmishers: 1, artillery: 1 },
+  },
+  intelligence: { spiesAvailable: true, unitCountsVisible: true },
   orders: { maxMoveOrdersPerTurn: 5 },
   schedule: [
-    { label: 'Monday', scoring: [] },
-    { label: 'Tuesday', scoring: [] },
-    { label: 'Wednesday', scoring: [{ kind: 'cityPoints', pointsPerCity: 3 }] },
-    { label: 'Thursday', scoring: [] },
-    { label: 'Friday', scoring: [{ kind: 'cityPoints', pointsPerCity: 6 }] },
+    { label: 'Monday', scoring: [], eventActive: false },
+    { label: 'Tuesday', scoring: [], eventActive: false },
+    {
+      label: 'Wednesday',
+      scoring: [{ kind: 'cityPoints', pointsPerCity: 3 }],
+      eventActive: false,
+    },
+    { label: 'Thursday', scoring: [], eventActive: false },
+    {
+      label: 'Friday',
+      scoring: [{ kind: 'cityPoints', pointsPerCity: 6 }],
+      eventActive: false,
+    },
   ],
+  upgrades: TEST_UPGRADES,
+  commanders: TEST_COMMANDERS,
+  events: TEST_EVENTS,
 };

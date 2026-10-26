@@ -1,16 +1,28 @@
 import { requirePresent } from '../../core/engine-error';
 import type { PlayerId, ZoneId } from '../../core/ids';
 import { compareByCodeUnitOrder } from '../../core/ids';
-import { addUnitCounts, subtractUnitCounts } from '../../core/unit-counts';
+import { compareInOrder } from '../../core/ordering';
+import {
+  addUnitCounts,
+  hasAnyUnits,
+  subtractUnitCounts,
+} from '../../core/unit-counts';
 import type { UnitCounts } from '../../core/unit-types';
 import type { BattleResult, BattleSide } from '../../combat/battle';
 import { resolveBattle } from '../../combat/resolve-battle';
-import type { ZoneConnection } from '../../map/map-definition';
-import { compareConnections, connectionKey } from '../../map/map-queries';
+import type { RouteLeg } from '../../map/map-queries';
+import {
+  connectionKey,
+  normaliseConnection,
+  routeLegs,
+} from '../../map/map-queries';
+import { effectiveParameters } from '../../modifiers/effective-parameters';
 import type { AcceptedOrders, MoveOrder } from '../../orders/orders';
+import { moveRoute } from '../../orders/orders';
 import type {
   ArmyMovedEvent,
   FieldBattleEvent,
+  MoveBouncedEvent,
 } from '../../replay/replay-events';
 import type { MatchState } from '../../state/match-state';
 import {
@@ -19,16 +31,24 @@ import {
   setPlayerUnitsInZone,
   unitsOfPlayerInZone,
 } from '../../state/match-state-queries';
-import { createBattleSide } from '../battle-sides';
+import { createFieldBattleSide } from '../battle-sides';
 import type { ResolutionState, TurnContext } from '../resolution-state';
 import { appendEvents } from '../resolution-state';
+
+const ROUTE_SEPARATOR = '>';
 
 /** All of one player's units travelling along one route this turn. */
 interface MovingGroup {
   readonly playerId: PlayerId;
-  readonly fromZoneId: ZoneId;
-  readonly toZoneId: ZoneId;
+  readonly route: readonly ZoneId[];
   readonly units: UnitCounts;
+}
+
+/** Two groups crossing the same connection in opposite directions. Indexes point into the moving groups. */
+interface HeadOnClash {
+  readonly firstIndex: number;
+  readonly secondIndex: number;
+  readonly leg: RouteLeg;
 }
 
 interface HeadOnClashResolution {
@@ -37,23 +57,37 @@ interface HeadOnClashResolution {
 }
 
 /**
- * All moves happen at once: every group leaves its zone, groups crossing the same connection in opposite
- * directions fight a field battle (no defender bonus), and the survivors arrive at their targets.
+ * All moves happen at once. Bounced moves stay home; every other group leaves its zone. Groups crossing the
+ * same connection in opposite directions fight a field battle (no defender bonus), in connection order, and
+ * the survivors arrive at their destinations.
  */
 export function applyMovementPhase(
   resolution: ResolutionState,
   context: TurnContext,
 ): ResolutionState {
   const groups = context.acceptedOrders.flatMap(mergeMoveOrdersByRoute);
-  const afterDepartures = groups.reduce(departGroup, resolution.match);
-  const clashes = resolveHeadOnClashes(groups, context);
-  const afterArrivals = clashes.groups.reduce(arriveGroup, afterDepartures);
-  return appendEvents(resolution, afterArrivals, [
-    ...groups.map(
-      (group): ArmyMovedEvent => toArmyMovedEvent(group, context.turnNumber),
-    ),
-    ...clashes.events,
-  ]);
+  const bouncedGroups = groups.filter((group): boolean =>
+    bouncesTonight(group, groups, resolution.match, context),
+  );
+  const movingGroups = groups.filter(
+    (group): boolean => !bouncedGroups.includes(group),
+  );
+  const afterDepartures = movingGroups.reduce(departGroup, resolution.match);
+  const clashes = resolveHeadOnClashes(movingGroups, resolution.match, context);
+  return appendEvents(
+    resolution,
+    clashes.groups.reduce(arriveGroup, afterDepartures),
+    [
+      ...bouncedGroups.map(
+        (group): MoveBouncedEvent =>
+          toMoveBouncedEvent(group, context.turnNumber),
+      ),
+      ...movingGroups.map(
+        (group): ArmyMovedEvent => toArmyMovedEvent(group, context.turnNumber),
+      ),
+      ...clashes.events,
+    ],
+  );
 }
 
 function mergeMoveOrdersByRoute(
@@ -63,7 +97,9 @@ function mergeMoveOrdersByRoute(
     .reduce<
       readonly MovingGroup[]
     >((groups, move): readonly MovingGroup[] => mergeMoveIntoGroups(groups, accepted.playerId, move), [])
-    .toSorted(compareGroupsByRoute);
+    .toSorted((left, right): number =>
+      compareByCodeUnitOrder(routeKey(left.route), routeKey(right.route)),
+    );
 }
 
 function mergeMoveIntoGroups(
@@ -71,19 +107,12 @@ function mergeMoveIntoGroups(
   playerId: PlayerId,
   move: MoveOrder,
 ): readonly MovingGroup[] {
-  const existingGroup = groups.find((group): boolean =>
-    isSameRoute(group, move),
+  const route = moveRoute(move);
+  const existingGroup = groups.find(
+    (group): boolean => routeKey(group.route) === routeKey(route),
   );
   return existingGroup === undefined
-    ? [
-        ...groups,
-        {
-          playerId,
-          fromZoneId: move.fromZoneId,
-          toZoneId: move.toZoneId,
-          units: move.units,
-        },
-      ]
+    ? [...groups, { playerId, route, units: move.units }]
     : groups.map(
         (group): MovingGroup =>
           group === existingGroup
@@ -92,103 +121,199 @@ function mergeMoveIntoGroups(
       );
 }
 
-function isSameRoute(group: MovingGroup, move: MoveOrder): boolean {
-  return (
-    group.fromZoneId === move.fromZoneId && group.toZoneId === move.toZoneId
+function routeKey(route: readonly ZoneId[]): string {
+  return route.join(ROUTE_SEPARATOR);
+}
+
+function originOf(group: MovingGroup): ZoneId {
+  return requirePresent(group.route[0], 'route origin');
+}
+
+function destinationOf(group: MovingGroup): ZoneId {
+  return requirePresent(
+    group.route[group.route.length - 1],
+    'route destination',
   );
 }
 
-function compareGroupsByRoute(left: MovingGroup, right: MovingGroup): number {
-  return compareByCodeUnitOrder(routeKey(left), routeKey(right));
+/**
+ * Under a bounce modifier (Armistice), a move into a zone owned by another player stays home, and so do
+ * moves of several players into the same neutral zone. Moves into your own zones never bounce. Between
+ * turns an occupied zone is always owned by its occupier, so "occupied by others" is covered by ownership.
+ */
+function bouncesTonight(
+  group: MovingGroup,
+  groups: readonly MovingGroup[],
+  state: MatchState,
+  context: TurnContext,
+): boolean {
+  return (
+    effectiveParameters(state, context.config, group.playerId, null)
+      .foreignAndContestedMovesBounce &&
+    isForeignOrContested(group, groups, state)
+  );
 }
 
-function routeKey(group: MovingGroup): string {
-  return `${group.fromZoneId}>${group.toZoneId}`;
+function isForeignOrContested(
+  group: MovingGroup,
+  groups: readonly MovingGroup[],
+  state: MatchState,
+): boolean {
+  const ownerId = findZone(state, destinationOf(group)).ownerId;
+  return ownerId === null
+    ? isContested(group, groups)
+    : ownerId !== group.playerId;
+}
+
+function isContested(
+  group: MovingGroup,
+  groups: readonly MovingGroup[],
+): boolean {
+  return groups.some(
+    (other): boolean =>
+      other.playerId !== group.playerId &&
+      destinationOf(other) === destinationOf(group),
+  );
 }
 
 function departGroup(state: MatchState, group: MovingGroup): MatchState {
+  const origin = originOf(group);
   const unitsInZone = unitsOfPlayerInZone(
-    findZone(state, group.fromZoneId),
+    findZone(state, origin),
     group.playerId,
   );
   return setPlayerUnitsInZone(
     state,
-    group.fromZoneId,
+    origin,
     group.playerId,
     subtractUnitCounts(unitsInZone, group.units),
   );
 }
 
 function arriveGroup(state: MatchState, group: MovingGroup): MatchState {
-  return addUnitsToZone(state, group.toZoneId, group.playerId, group.units);
+  return addUnitsToZone(
+    state,
+    destinationOf(group),
+    group.playerId,
+    group.units,
+  );
 }
 
 function resolveHeadOnClashes(
   groups: readonly MovingGroup[],
+  state: MatchState,
   context: TurnContext,
 ): HeadOnClashResolution {
-  const clashingConnections = groups
-    .filter(
-      (group): boolean =>
-        hasOpposingGroup(groups, group) && isTravellingInConnectionOrder(group),
-    )
-    .map((group): ZoneConnection => [group.fromZoneId, group.toZoneId])
-    .toSorted(compareConnections);
-  return clashingConnections.reduce(
-    (resolution, connection): HeadOnClashResolution =>
-      resolveClashOnConnection(resolution, connection, context),
+  return findHeadOnClashes(groups).reduce(
+    (resolution, clash): HeadOnClashResolution =>
+      resolveClash(resolution, clash, state, context),
     { groups, events: [] },
   );
 }
 
-function hasOpposingGroup(
+/**
+ * Each pair of opposing groups clashes once, on the first connection they cross head-on. Clashes resolve in
+ * connection order; on the same connection, in group order (seat, then route).
+ */
+function findHeadOnClashes(
   groups: readonly MovingGroup[],
-  group: MovingGroup,
-): boolean {
-  return groups.some((other): boolean => isOpposingGroup(group, other));
+): readonly HeadOnClash[] {
+  return groups
+    .flatMap((group, firstIndex): readonly HeadOnClash[] =>
+      groups
+        .map((_other, secondIndex): HeadOnClash | null =>
+          findClashBetween(groups, firstIndex, secondIndex),
+        )
+        .filter(
+          (clash): clash is HeadOnClash =>
+            clash !== null && clash.firstIndex < clash.secondIndex,
+        ),
+    )
+    .toSorted(
+      compareInOrder<HeadOnClash>([
+        (left, right): number =>
+          compareByCodeUnitOrder(
+            connectionKey(...left.leg),
+            connectionKey(...right.leg),
+          ),
+        (left, right): number => left.firstIndex - right.firstIndex,
+      ]),
+    );
 }
 
-function isOpposingGroup(group: MovingGroup, other: MovingGroup): boolean {
-  return isReverseRoute(group, other) && other.playerId !== group.playerId;
+function findClashBetween(
+  groups: readonly MovingGroup[],
+  firstIndex: number,
+  secondIndex: number,
+): HeadOnClash | null {
+  const leg = findLegCrossedByOpponents(
+    requirePresent(groups[firstIndex], 'moving group'),
+    requirePresent(groups[secondIndex], 'moving group'),
+  );
+  return leg === undefined ? null : { firstIndex, secondIndex, leg };
 }
 
-function isReverseRoute(group: MovingGroup, other: MovingGroup): boolean {
-  return (
-    other.fromZoneId === group.toZoneId && other.toZoneId === group.fromZoneId
+function findLegCrossedByOpponents(
+  first: MovingGroup,
+  second: MovingGroup,
+): RouteLeg | undefined {
+  return first.playerId === second.playerId
+    ? undefined
+    : findOpposedLeg(first, second);
+}
+
+function findOpposedLeg(
+  first: MovingGroup,
+  second: MovingGroup,
+): RouteLeg | undefined {
+  const secondLegKeys = routeLegs(second.route).map(
+    ([fromZoneId, toZoneId]): string =>
+      `${toZoneId}${ROUTE_SEPARATOR}${fromZoneId}`,
+  );
+  return routeLegs(first.route).find((leg): boolean =>
+    secondLegKeys.includes(leg.join(ROUTE_SEPARATOR)),
   );
 }
 
-/** Of the two groups in a clash, exactly one travels from the lower zone id to the higher one. */
-function isTravellingInConnectionOrder(group: MovingGroup): boolean {
-  return compareByCodeUnitOrder(group.fromZoneId, group.toZoneId) < 0;
-}
-
-function resolveClashOnConnection(
+/** A group already destroyed by an earlier clash has nothing left to fight with. */
+function resolveClash(
   resolution: HeadOnClashResolution,
-  connection: ZoneConnection,
+  clash: HeadOnClash,
+  state: MatchState,
   context: TurnContext,
 ): HeadOnClashResolution {
-  const clashKey = connectionKey(...connection);
-  const clashingGroups = resolution.groups.filter(
-    (group): boolean =>
-      connectionKey(group.fromZoneId, group.toZoneId) === clashKey,
+  const clashingGroups = [clash.firstIndex, clash.secondIndex].map(
+    (index): MovingGroup =>
+      requirePresent(resolution.groups[index], 'moving group'),
   );
+  return clashingGroups.every((group): boolean => hasAnyUnits(group.units))
+    ? fightClash(resolution, clash, clashingGroups, state, context)
+    : resolution;
+}
+
+function fightClash(
+  resolution: HeadOnClashResolution,
+  clash: HeadOnClash,
+  clashingGroups: readonly MovingGroup[],
+  state: MatchState,
+  context: TurnContext,
+): HeadOnClashResolution {
   const battle = resolveBattle(
     clashingGroups.map(
       (group): BattleSide =>
-        createBattleSide(
+        createFieldBattleSide(
+          state,
+          context.config,
           group.playerId,
           group.units,
-          'attacker',
-          context.config.combat,
         ),
     ),
     context.config.combat,
   );
   return {
     groups: resolution.groups.map(
-      (group): MovingGroup =>
-        clashingGroups.includes(group)
+      (group, index): MovingGroup =>
+        isInClash(clash, index)
           ? { ...group, units: survivingUnitsOf(battle, group.playerId) }
           : group,
     ),
@@ -197,11 +322,15 @@ function resolveClashOnConnection(
       {
         type: 'FieldBattle',
         turnNumber: context.turnNumber,
-        connection,
+        connection: normaliseConnection(...clash.leg),
         battle,
       },
     ],
   };
+}
+
+function isInClash(clash: HeadOnClash, index: number): boolean {
+  return index === clash.firstIndex || index === clash.secondIndex;
 }
 
 function survivingUnitsOf(
@@ -222,8 +351,23 @@ function toArmyMovedEvent(
     type: 'ArmyMoved',
     turnNumber,
     playerId: group.playerId,
-    fromZoneId: group.fromZoneId,
-    toZoneId: group.toZoneId,
+    fromZoneId: originOf(group),
+    viaZoneIds: group.route.slice(1, group.route.length - 1),
+    toZoneId: destinationOf(group),
+    units: group.units,
+  };
+}
+
+function toMoveBouncedEvent(
+  group: MovingGroup,
+  turnNumber: number,
+): MoveBouncedEvent {
+  return {
+    type: 'MoveBounced',
+    turnNumber,
+    playerId: group.playerId,
+    fromZoneId: originOf(group),
+    toZoneId: destinationOf(group),
     units: group.units,
   };
 }

@@ -4,6 +4,7 @@ import type {
 } from '../../config/match-config';
 import { isCityZone } from '../../map/map-queries';
 import type { PointsAwardedEvent } from '../../replay/replay-events';
+import { activePlayers } from '../../state/active-players';
 import type { MatchState, PlayerState } from '../../state/match-state';
 import type { ResolutionState, TurnContext } from '../resolution-state';
 import { appendEvents } from '../resolution-state';
@@ -44,18 +45,20 @@ function awardCityPoints(
   rule: CityPointsScoringRule,
   context: TurnContext,
 ): ResolutionState {
-  const awards = resolution.match.players.map((player): CityPointsAward => {
-    const citiesHeld = countCitiesHeld(resolution.match, player, context);
-    return { player, citiesHeld, points: citiesHeld * rule.pointsPerCity };
-  });
+  const awards = activePlayers(resolution.match).map(
+    (player): CityPointsAward => {
+      const citiesHeld = countCitiesHeld(resolution.match, player, context);
+      return { player, citiesHeld, points: citiesHeld * rule.pointsPerCity };
+    },
+  );
   return appendEvents(
     resolution,
     {
       ...resolution.match,
-      players: awards.map(
-        ({ player, points }): PlayerState => ({
+      players: resolution.match.players.map(
+        (player): PlayerState => ({
           ...player,
-          score: player.score + points,
+          score: player.score + pointsFor(awards, player),
         }),
       ),
     },
@@ -70,6 +73,15 @@ function awardCityPoints(
       }),
     ),
   );
+}
+
+function pointsFor(
+  awards: readonly CityPointsAward[],
+  player: PlayerState,
+): number {
+  return awards
+    .filter((award): boolean => award.player.playerId === player.playerId)
+    .reduce((total, award): number => total + award.points, 0);
 }
 
 function countCitiesHeld(

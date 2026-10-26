@@ -2,7 +2,9 @@ import { EngineContractError } from '../core/engine-error';
 import { toZoneId } from '../core/ids';
 import { TEST_MAP } from '../../testing/test-map';
 import {
+  adjacentZoneIds,
   areZonesAdjacent,
+  routeLegs,
   compareConnections,
   connectionKey,
   findStartingCapital,
@@ -71,5 +73,23 @@ describe('map queries', () => {
         'Missing starting capital for seat 5 on map test-grid-3x3',
       ),
     );
+  });
+
+  it('lists adjacent zones in zone id order', () => {
+    expect(adjacentZoneIds(TEST_MAP, toZoneId('B2'))).toEqual([
+      'A2',
+      'B1',
+      'B3',
+      'C2',
+    ]);
+    expect(adjacentZoneIds(TEST_MAP, A1)).toEqual(['A2', 'B1']);
+  });
+
+  it('splits a route into its legs', () => {
+    expect(routeLegs([A1, A2, toZoneId('B2')])).toEqual([
+      [A1, A2],
+      [A2, 'B2'],
+    ]);
+    expect(routeLegs([A1])).toEqual([]);
   });
 });

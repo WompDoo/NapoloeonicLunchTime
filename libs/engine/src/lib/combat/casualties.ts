@@ -22,7 +22,8 @@ function removeOneCasualty(
   return { ...units, [casualtyType]: units[casualtyType] - 1 };
 }
 
-function selectCasualtyType(
+/** The unit type the next casualty comes from. */
+export function selectCasualtyType(
   units: UnitCounts,
   removalOrder: readonly (readonly UnitType[])[],
 ): UnitType {

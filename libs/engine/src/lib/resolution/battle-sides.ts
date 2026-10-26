@@ -6,37 +6,133 @@ import type {
   CombatProfile,
   StrengthBonus,
 } from '../combat/battle';
-import type { CombatRules } from '../config/match-config';
+import type { MatchConfig } from '../config/match-config';
+import { effectiveParameters } from '../modifiers/effective-parameters';
+import type { EffectiveParameters } from '../modifiers/parameters';
+import type { Army, MatchState, ZoneState } from '../state/match-state';
 
-const ROLE_BONUSES: Readonly<
-  Record<BattleRole, (combat: CombatRules) => readonly StrengthBonus[]>
+const BASE_DEFENDER_BONUS_SOURCE = 'defender';
+
+interface Participant {
+  readonly army: Army;
+  readonly role: BattleRole;
+  readonly parameters: EffectiveParameters;
+}
+
+const BONUSES_BY_ROLE: Readonly<
+  Record<
+    BattleRole,
+    (
+      parameters: EffectiveParameters,
+      defendingBonusesCancelled: boolean,
+    ) => readonly StrengthBonus[]
+  >
 > = {
-  defender: (combat): readonly StrengthBonus[] => [
-    { source: 'defender', value: combat.defenderBonus },
-  ],
-  attacker: (): readonly StrengthBonus[] => [],
+  defender: (
+    parameters,
+    defendingBonusesCancelled,
+  ): readonly StrengthBonus[] =>
+    defendingBonusesCancelled ? [] : defendingBonuses(parameters),
+  attacker: (parameters): readonly StrengthBonus[] =>
+    bonusesForRole(parameters, 'attacker'),
 };
 
-export function createBattleSide(
+/**
+ * The sides of a battle in a zone. The zone's owner defends if it has units there. Each side fights with its
+ * own effective parameters in that zone. An attacker with a defender-bonus suppressor present (Grand Charge
+ * with cavalry) cancels every defending bonus.
+ */
+export function createZoneBattleSides(
+  state: MatchState,
+  config: MatchConfig,
+  zone: ZoneState,
+): readonly BattleSide[] {
+  const participants = zone.armies.map(
+    (army): Participant => ({
+      army,
+      role: army.playerId === zone.ownerId ? 'defender' : 'attacker',
+      parameters: effectiveParameters(
+        state,
+        config,
+        army.playerId,
+        zone.zoneId,
+      ),
+    }),
+  );
+  const defendingBonusesCancelled = participants.some(cancelsDefendingBonuses);
+  return participants.map(
+    (participant): BattleSide =>
+      toBattleSide(participant, defendingBonusesCancelled),
+  );
+}
+
+/** A side in a head-on clash: always an attacker, never in a zone. */
+export function createFieldBattleSide(
+  state: MatchState,
+  config: MatchConfig,
   playerId: PlayerId,
   units: UnitCounts,
-  role: BattleRole,
-  combat: CombatRules,
+): BattleSide {
+  return toBattleSide(
+    {
+      army: { playerId, units },
+      role: 'attacker',
+      parameters: effectiveParameters(state, config, playerId, null),
+    },
+    false,
+  );
+}
+
+function toBattleSide(
+  participant: Participant,
+  defendingBonusesCancelled: boolean,
 ): BattleSide {
   return {
-    playerId,
-    role,
-    units,
-    profile: combatProfileFromRules(combat),
-    bonuses: ROLE_BONUSES[role](combat),
+    playerId: participant.army.playerId,
+    role: participant.role,
+    units: participant.army.units,
+    profile: combatProfileOf(participant.parameters),
+    bonuses: BONUSES_BY_ROLE[participant.role](
+      participant.parameters,
+      defendingBonusesCancelled,
+    ),
   };
 }
 
-function combatProfileFromRules(combat: CombatRules): CombatProfile {
+function cancelsDefendingBonuses(participant: Participant): boolean {
+  return (
+    participant.role === 'attacker' &&
+    participant.parameters.defenderBonusSuppressorTypes.some(
+      (unitType): boolean => participant.army.units[unitType] > 0,
+    )
+  );
+}
+
+function defendingBonuses(
+  parameters: EffectiveParameters,
+): readonly StrengthBonus[] {
+  return [
+    { source: BASE_DEFENDER_BONUS_SOURCE, value: parameters.defenderBonus },
+    ...bonusesForRole(parameters, 'defender'),
+  ];
+}
+
+function bonusesForRole(
+  parameters: EffectiveParameters,
+  role: BattleRole,
+): readonly StrengthBonus[] {
+  return parameters.strengthBonuses
+    .filter((bonus): boolean => bonus.role === role)
+    .map(
+      (bonus): StrengthBonus => ({ source: bonus.source, value: bonus.value }),
+    );
+}
+
+function combatProfileOf(parameters: EffectiveParameters): CombatProfile {
   return {
-    baseStrength: combat.baseStrength,
-    offense: combat.offense,
-    vulnerability: combat.vulnerability,
-    winnerLossRatio: combat.winnerLossRatio,
+    baseStrength: parameters.baseStrength,
+    offense: parameters.offense,
+    vulnerability: parameters.vulnerability,
+    winnerLossRatio: parameters.winnerLossRatio,
   };
 }

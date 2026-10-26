@@ -1,5 +1,6 @@
 import type { PlayerId, ZoneId } from '../core/ids';
 import type { UnitCounts } from '../core/unit-types';
+import type { ActiveModifier } from '../modifiers/active-modifiers';
 
 export interface PlayerState {
   readonly playerId: PlayerId;
@@ -7,6 +8,12 @@ export interface PlayerState {
   readonly startingCapitalZoneId: ZoneId;
   readonly supply: number;
   readonly score: number;
+  readonly commanderId: string;
+  /** Upgrade ids bought, in purchase order. Each upgrade can be bought once per match. */
+  readonly upgrades: readonly string[];
+  readonly abilityUsed: boolean;
+  /** Eliminated players own nothing, and their orders are ignored. Their points still count. */
+  readonly eliminated: boolean;
 }
 
 export interface Army {
@@ -34,4 +41,6 @@ export interface MatchState {
   readonly players: readonly PlayerState[];
   /** Sorted by zone id. */
   readonly zones: readonly ZoneState[];
+  /** Upgrades, commander passives and abilities, and events in play, including ones announced for later. */
+  readonly modifiers: readonly ActiveModifier[];
 }

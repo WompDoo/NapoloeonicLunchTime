@@ -2,6 +2,7 @@ import type { PlayerId, ZoneId } from '../core/ids';
 import type { UnitCounts, UnitType } from '../core/unit-types';
 import type { BattleResult } from '../combat/battle';
 import type { ZoneConnection } from '../map/map-definition';
+import type { AbilityTarget } from '../modifiers/ability-target';
 import type { Order, OrderRejectionReason } from '../orders/orders';
 
 interface ReplayEventBase {
@@ -25,8 +26,50 @@ export interface UnitsRecruitedEvent extends ReplayEventBase {
   readonly cost: number;
 }
 
+export interface UpgradeBoughtEvent extends ReplayEventBase {
+  readonly type: 'UpgradeBought';
+  readonly playerId: PlayerId;
+  readonly upgradeId: string;
+  readonly cost: number;
+}
+
+/** Abilities stay hidden until resolution; this reveals one in the replay. */
+export interface AbilityUsedEvent extends ReplayEventBase {
+  readonly type: 'AbilityUsed';
+  readonly playerId: PlayerId;
+  readonly commanderId: string;
+  readonly abilityId: string;
+  readonly target: AbilityTarget;
+}
+
+/** An ability whose condition wasn't met that night. It is still used up. */
+export interface AbilityHadNoEffectEvent extends ReplayEventBase {
+  readonly type: 'AbilityHadNoEffect';
+  readonly playerId: PlayerId;
+  readonly modifierId: string;
+}
+
+/** Free units from a modifier (Levée en masse). */
+export interface UnitsGrantedEvent extends ReplayEventBase {
+  readonly type: 'UnitsGranted';
+  readonly playerId: PlayerId;
+  readonly zoneId: ZoneId;
+  readonly units: UnitCounts;
+  readonly modifierId: string;
+}
+
 export interface ArmyMovedEvent extends ReplayEventBase {
   readonly type: 'ArmyMoved';
+  readonly playerId: PlayerId;
+  readonly fromZoneId: ZoneId;
+  readonly viaZoneIds: readonly ZoneId[];
+  readonly toZoneId: ZoneId;
+  readonly units: UnitCounts;
+}
+
+/** A move that stayed home because a modifier (Armistice) bounced it. */
+export interface MoveBouncedEvent extends ReplayEventBase {
+  readonly type: 'MoveBounced';
   readonly playerId: PlayerId;
   readonly fromZoneId: ZoneId;
   readonly toZoneId: ZoneId;
@@ -40,10 +83,56 @@ export interface FieldBattleEvent extends ReplayEventBase {
   readonly battle: BattleResult;
 }
 
+/** Units that joined a battle in the reinforcement phase (Marschall Vorwärts). */
+export interface ReinforcementsJoinedEvent extends ReplayEventBase {
+  readonly type: 'ReinforcementsJoined';
+  readonly playerId: PlayerId;
+  readonly fromZoneId: ZoneId;
+  readonly toZoneId: ZoneId;
+  readonly units: UnitCounts;
+  readonly modifierId: string;
+}
+
+export interface BombardmentHit {
+  readonly playerId: PlayerId;
+  readonly unitType: UnitType;
+}
+
+/** One support order firing. Revealed, with its zone and count, to every player in that battle. */
+export interface BombardmentEvent extends ReplayEventBase {
+  readonly type: 'Bombardment';
+  readonly playerId: PlayerId;
+  readonly fromZoneId: ZoneId;
+  readonly targetZoneId: ZoneId;
+  readonly artillery: number;
+  readonly hits: readonly BombardmentHit[];
+  /** Hits stopped by a shield (Reverse Slope). */
+  readonly blockedHits: number;
+  /** Hits with nothing left to hit. */
+  readonly wastedHits: number;
+}
+
 export interface BattleResolvedEvent extends ReplayEventBase {
   readonly type: 'BattleResolved';
   readonly zoneId: ZoneId;
   readonly battle: BattleResult;
+}
+
+/** Units saved by Orderly Retreat. */
+export interface RetreatedEvent extends ReplayEventBase {
+  readonly type: 'Retreated';
+  readonly playerId: PlayerId;
+  readonly fromZoneId: ZoneId;
+  readonly toZoneId: ZoneId;
+  readonly units: UnitCounts;
+}
+
+/** Orderly Retreat with no safe zone to retreat to: the units are destroyed. */
+export interface RetreatBlockedEvent extends ReplayEventBase {
+  readonly type: 'RetreatBlocked';
+  readonly playerId: PlayerId;
+  readonly zoneId: ZoneId;
+  readonly units: UnitCounts;
 }
 
 export interface ZoneCapturedEvent extends ReplayEventBase {
@@ -51,6 +140,15 @@ export interface ZoneCapturedEvent extends ReplayEventBase {
   readonly zoneId: ZoneId;
   readonly previousOwnerId: PlayerId | null;
   readonly newOwnerId: PlayerId;
+}
+
+/** Units lost outside battle to a modifier (Typhus). */
+export interface UnitsLostToModifierEvent extends ReplayEventBase {
+  readonly type: 'UnitsLostToModifier';
+  readonly playerId: PlayerId;
+  readonly zoneId: ZoneId;
+  readonly units: UnitCounts;
+  readonly modifierId: string;
 }
 
 export interface SupplyProducedEvent extends ReplayEventBase {
@@ -67,12 +165,36 @@ export interface PointsAwardedEvent extends ReplayEventBase {
   readonly points: number;
 }
 
+export interface PlayerEliminatedEvent extends ReplayEventBase {
+  readonly type: 'PlayerEliminated';
+  readonly playerId: PlayerId;
+}
+
+/** Announced the night before the event is active. */
+export interface EventAnnouncedEvent extends ReplayEventBase {
+  readonly type: 'EventAnnounced';
+  readonly eventId: string;
+  readonly activeTurnNumber: number;
+}
+
 export type ReplayEvent =
   | OrderRejectedEvent
   | UnitsRecruitedEvent
+  | UpgradeBoughtEvent
+  | AbilityUsedEvent
+  | AbilityHadNoEffectEvent
+  | UnitsGrantedEvent
   | ArmyMovedEvent
+  | MoveBouncedEvent
   | FieldBattleEvent
+  | ReinforcementsJoinedEvent
+  | BombardmentEvent
   | BattleResolvedEvent
+  | RetreatedEvent
+  | RetreatBlockedEvent
   | ZoneCapturedEvent
+  | UnitsLostToModifierEvent
   | SupplyProducedEvent
-  | PointsAwardedEvent;
+  | PointsAwardedEvent
+  | PlayerEliminatedEvent
+  | EventAnnouncedEvent;

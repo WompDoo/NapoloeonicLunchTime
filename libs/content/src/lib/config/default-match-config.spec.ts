@@ -20,6 +20,7 @@ import {
   DEFAULT_COMBAT_RULES,
   DEFAULT_MATCH_CONFIG,
 } from './default-match-config';
+import { SIR_JOHN_MOORE } from '../modifiers/commanders';
 
 const CAVALRY_PLAYER = toPlayerId('cavalry');
 const LINE_PLAYER = toPlayerId('line');
@@ -66,6 +67,7 @@ describe('default match config', () => {
       startingSupply: 6,
       productionByZoneKind: { plain: 1, city: 2, capital: 3 },
       recruitCost: { line: 2, cavalry: 3, skirmishers: 2, artillery: 4 },
+      upgradeCost: 6,
     });
     expect(DEFAULT_MATCH_CONFIG.startingUnits).toEqual({
       line: 3,
@@ -106,16 +108,51 @@ describe('default match config', () => {
     );
   });
 
-  it('schedules one working week with city points on Wednesday and double on Friday', () => {
+  it('schedules one working week: city points Wednesday and double on Friday, the event on Wednesday', () => {
     expect(DEFAULT_MATCH_CONFIG.schedule).toEqual([
-      { label: 'Monday', scoring: [] },
-      { label: 'Tuesday', scoring: [] },
+      { label: 'Monday', scoring: [], eventActive: false },
+      { label: 'Tuesday', scoring: [], eventActive: false },
       {
         label: 'Wednesday',
         scoring: [{ kind: 'cityPoints', pointsPerCity: 3 }],
+        eventActive: true,
       },
-      { label: 'Thursday', scoring: [] },
-      { label: 'Friday', scoring: [{ kind: 'cityPoints', pointsPerCity: 6 }] },
+      { label: 'Thursday', scoring: [], eventActive: false },
+      {
+        label: 'Friday',
+        scoring: [{ kind: 'cityPoints', pointsPerCity: 6 }],
+        eventActive: false,
+      },
+    ]);
+  });
+
+  it('matches the spec’s other M2 tuning values', () => {
+    expect(DEFAULT_MATCH_CONFIG.economy.upgradeCost).toBe(6);
+    expect(DEFAULT_MATCH_CONFIG.bombardment).toEqual({
+      hitsPerArtillery: 1,
+      volleysPerNight: 1,
+    });
+    expect(DEFAULT_MATCH_CONFIG.upgrades.map((upgrade) => upgrade.id)).toEqual([
+      'orderly-retreat',
+      'bayonet-drill',
+      'lancers',
+    ]);
+    expect(
+      DEFAULT_MATCH_CONFIG.commanders.map((commander) => commander.id),
+    ).toEqual([
+      'napoleon',
+      'wellington',
+      'murat',
+      'blucher',
+      'kutuzov',
+      'moore',
+    ]);
+    expect(DEFAULT_MATCH_CONFIG.events.map((event) => event.id)).toEqual([
+      'mud',
+      'fog',
+      'typhus',
+      'levee-en-masse',
+      'armistice',
     ]);
   });
 
@@ -165,7 +202,11 @@ describe('default match config', () => {
 
   it('plays a full quiet week on the v0 map', () => {
     const seating: readonly PlayerSeating[] = ['p1', 'p2', 'p3', 'p4'].map(
-      (id, index) => ({ playerId: toPlayerId(id), seat: index + 1 }),
+      (id, index) => ({
+        playerId: toPlayerId(id),
+        seat: index + 1,
+        commanderId: SIR_JOHN_MOORE,
+      }),
     );
     const week = DEFAULT_MATCH_CONFIG.schedule.reduce(
       (state) => resolveTurn(state, [], DEFAULT_MATCH_CONFIG).state,
