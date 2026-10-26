@@ -6,6 +6,7 @@ import type {
   PlayerId,
   PlayerStanding,
   ReplayEvent,
+  UnitType,
   VisibleAbilityTarget,
   VisibleEvent,
   ZoneId,
@@ -17,7 +18,13 @@ import {
   narrateFormation,
   narrateFormationSummary,
 } from './narrate-battle';
-import { describeCount, describeUnits, humanise, plural } from './text';
+import {
+  describeCount,
+  describeUnits,
+  describeUnitTypes,
+  humanise,
+  plural,
+} from './text';
 
 type EventOfType<TType extends ReplayEvent['type']> = Extract<
   ReplayEvent,
@@ -201,11 +208,19 @@ function revealedTargetText(target: VisibleAbilityTarget): string {
   return describe(target);
 }
 
+/** "p2 lost 1C 1S", one entry per player hit, in the order they were first hit. */
 function hitsText(hits: readonly BombardmentHit[]): string {
   return hits.length === 0
     ? 'no hits'
-    : hits
-        .map((hit): string => `${hit.playerId} lost 1 ${hit.unitType}`)
+    : [...new Set(hits.map((hit): PlayerId => hit.playerId))]
+        .map(
+          (playerId): string =>
+            `${playerId} lost ${describeUnitTypes(
+              hits
+                .filter((hit): boolean => hit.playerId === playerId)
+                .map((hit): UnitType => hit.unitType),
+            )}`,
+        )
         .join(', ');
 }
 

@@ -10,7 +10,7 @@ p2 moved 2C 3S: B3 -> C3
 p4 moved 2 units: D4 -> D3
 p2 sent 1C to join the battle: C4 -> C3
 Battle forms at C3: p2 attacks with 3C 3S; p3 defends with 2L 2S
-p2's 1 artillery in B3 bombarded C3: p3 lost 1 line
+p2's 1 artillery in B3 bombarded C3: p3 lost 1L
 Battle at C3: p2 wins
   p2 (attacker): 3C 3S -> 2C 1S, strength 9.9 (9 base, +10% passive:blucher:p2)
     cavalry vs line 1, cavalry vs skirmishers 4, skirmishers vs line 2, skirmishers vs skirmishers 2
@@ -29,7 +29,7 @@ exports[`narrateVisibleEvent tells a defence won under bombardment 1`] = `
 kutuzov-player moved 3 units: C2 -> C3
 Battle forms at B2: napoleon-player defends with 2L 2C; wellington-player attacks with 2C 2S
 Battle forms at C3: kutuzov-player attacks with 3 units; murat-player defends with 2 units
-napoleon-player's 1 artillery in A2 bombarded B2: wellington-player lost 1 skirmishers, wellington-player lost 1 cavalry
+napoleon-player's 1 artillery in A2 bombarded B2: wellington-player lost 1C 1S
 Battle at B2: napoleon-player wins
   napoleon-player (defender): 2L 2C -> 1L 1C, strength 7.5 (6 base, +25% defender)
     line vs cavalry 2, line vs skirmishers 1, cavalry vs cavalry 1, cavalry vs skirmishers 2

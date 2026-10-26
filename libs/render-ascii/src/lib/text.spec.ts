@@ -1,6 +1,7 @@
 import {
   describeCount,
   describeUnits,
+  describeUnitTypes,
   formatNumber,
   formatPercent,
   formatTable,
@@ -22,6 +23,13 @@ describe('text helpers', () => {
     },
   ])('describes units as $text', ({ units, text }) => {
     expect(describeUnits(units)).toBe(text);
+  });
+
+  it('describes a list of single units as army text', () => {
+    expect(describeUnitTypes(['cavalry', 'skirmishers', 'cavalry'])).toBe(
+      '2C 1S',
+    );
+    expect(describeUnitTypes([])).toBe('none');
   });
 
   it.each([

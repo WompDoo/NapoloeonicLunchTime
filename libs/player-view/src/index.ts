@@ -25,7 +25,7 @@ export type {
   ZoneKind,
   ZonePosition,
 } from '@lunch-campaign/engine';
-export { UNIT_TYPES } from '@lunch-campaign/engine';
+export { mapUnitTypes, UNIT_TYPES } from '@lunch-campaign/engine';
 export type {
   HonourAward,
   MatchScore,

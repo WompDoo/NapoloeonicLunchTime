@@ -1,5 +1,5 @@
 import type { UnitCounts, UnitType } from '@lunch-campaign/player-view';
-import { UNIT_TYPES } from '@lunch-campaign/player-view';
+import { mapUnitTypes, UNIT_TYPES } from '@lunch-campaign/player-view';
 
 /** One letter per unit type, used in every army text: "3L 2C". */
 export const UNIT_LETTERS: Readonly<Record<UnitType, string>> = {
@@ -30,6 +30,16 @@ export function unitParts(units: UnitCounts): readonly string[] {
 export function describeUnits(units: UnitCounts): string {
   const parts = unitParts(units);
   return parts.length === 0 ? NO_UNITS : parts.join(' ');
+}
+
+/** One unit per entry, as army text: [cavalry, skirmishers, cavalry] → "2C 1S". */
+export function describeUnitTypes(unitTypes: readonly UnitType[]): string {
+  return describeUnits(
+    mapUnitTypes(
+      (unitType): number =>
+        unitTypes.filter((candidate): boolean => candidate === unitType).length,
+    ),
+  );
 }
 
 /** "1 unit", "5 units". */
