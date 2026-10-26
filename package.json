@@ -1,0 +1,42 @@
+{
+  "name": "@lunch-campaign/source",
+  "version": "0.0.0",
+  "license": "UNLICENSED",
+  "scripts": {
+    "lint": "nx run-many -t lint",
+    "typecheck": "nx run-many -t typecheck",
+    "test": "nx run-many -t test",
+    "format:check": "nx format:check --all",
+    "format": "nx format:write --all",
+    "verify": "nx format:check --all && nx run-many -t lint typecheck test"
+  },
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "@eslint/js": "^9.8.0",
+    "@nx/eslint": "23.3.1",
+    "@nx/eslint-plugin": "23.3.1",
+    "@nx/jest": "23.3.1",
+    "@nx/js": "23.3.1",
+    "@nx/workspace": "23.3.1",
+    "@swc/helpers": "~0.5.18",
+    "@types/jest": "~30.0.0",
+    "@types/node": "^22.0.0",
+    "eslint": "^9.8.0",
+    "eslint-config-prettier": "^10.0.0",
+    "jest": "~30.3.0",
+    "jest-environment-node": "~30.3.0",
+    "jest-util": "~30.3.0",
+    "nx": "23.3.1",
+    "prettier": "~3.6.2",
+    "ts-jest": "^29.4.7",
+    "ts-node": "10.9.1",
+    "tslib": "^2.3.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.58.0"
+  },
+  "packageManager": "yarn@1.22.22",
+  "engines": {
+    "node": ">=22"
+  }
+}
