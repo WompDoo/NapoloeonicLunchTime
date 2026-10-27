@@ -10,6 +10,7 @@ import type {
 import {
   activeModifiersInOrder,
   effectiveParameters,
+  findCommander,
   findPlayer,
   findZoneDefinition,
   isMatchFinished,
@@ -24,6 +25,7 @@ import { canSpyToday } from './spy-on-zone';
 import type {
   ArmyVisibility,
   MatchLogs,
+  OrderRulesView,
   OwnPlayerView,
   PlayerView,
   PublicPlayerView,
@@ -66,6 +68,7 @@ export function filterForPlayer(
     spiesAvailable: canSpyToday(state, config, viewerId),
     spyCost: parameters.spyCost,
     unitCountsVisible: parameters.unitCountsVisible,
+    orderRules: orderRulesFor(viewer, parameters, config),
     honours: honourStandings(state, logs, config),
     lastNight: visibleEventsFor(
       lastNightOf(logs.replayLog, state.turnNumber),
@@ -77,6 +80,22 @@ export function filterForPlayer(
         spyReport.playerId === viewerId &&
         spyReport.turnNumber === state.turnNumber,
     ) satisfies readonly SpyReport[],
+  };
+}
+
+function orderRulesFor(
+  viewer: PlayerState,
+  parameters: EffectiveParameters,
+  config: MatchConfig,
+): OrderRulesView {
+  return {
+    maxMoveOrders: config.orders.maxMoveOrdersPerTurn,
+    moveRange: parameters.moveRange,
+    recruitCost: parameters.recruitCost,
+    upgradeCost: parameters.upgradeCost,
+    upgradeIds: config.upgrades.map((upgrade): string => upgrade.id),
+    abilityTargetKind: findCommander(config, viewer.commanderId).ability
+      .targetKind,
   };
 }
 

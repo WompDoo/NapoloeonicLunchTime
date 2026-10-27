@@ -1,4 +1,10 @@
-import { DEFAULT_MATCH_CONFIG, FOG, TYPHUS } from '@lunch-campaign/content';
+import {
+  DEFAULT_MATCH_CONFIG,
+  FOG,
+  MUD,
+  MURAT,
+  TYPHUS,
+} from '@lunch-campaign/content';
 import type { ScenarioOptions } from '@lunch-campaign/content/testing';
 import { createV0State, P1, P2 } from '@lunch-campaign/content/testing';
 import type { MatchState, PlayerId, ReplayEvent } from '@lunch-campaign/engine';
@@ -103,6 +109,31 @@ describe('filterForPlayer', () => {
         lastNight: [],
         spyReports: [],
         finalScore: null,
+      });
+    });
+  });
+
+  describe('order rules', () => {
+    it('gives the day’s costs, limits and upgrades from the config', () => {
+      expect(viewOf(stateWith({})).orderRules).toEqual({
+        maxMoveOrders: DEFAULT_MATCH_CONFIG.orders.maxMoveOrdersPerTurn,
+        moveRange: DEFAULT_MATCH_CONFIG.movement.moveRange,
+        recruitCost: DEFAULT_MATCH_CONFIG.economy.recruitCost,
+        upgradeCost: DEFAULT_MATCH_CONFIG.economy.upgradeCost,
+        upgradeIds: DEFAULT_MATCH_CONFIG.upgrades.map((upgrade) => upgrade.id),
+        abilityTargetKind: 'none',
+      });
+    });
+
+    it('applies the viewer’s commander and today’s event', () => {
+      const muddyMurat = stateWith({
+        turnNumber: 3,
+        players: [{ commanderId: MURAT }],
+        extraModifiers: [createEventModifier(MUD, 3)],
+      });
+      expect(viewOf(muddyMurat).orderRules.moveRange).toMatchObject({
+        cavalry: 2,
+        artillery: 0,
       });
     });
   });

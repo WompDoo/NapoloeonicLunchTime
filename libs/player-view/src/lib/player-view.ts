@@ -1,8 +1,10 @@
 import type { MatchScore } from '@lunch-campaign/honours';
 import type {
+  AbilityTargetKind,
   PlayerId,
   ReplayEvent,
   UnitCounts,
+  UnitTypeRecord,
   ZoneConnection,
   ZoneId,
   ZoneKind,
@@ -56,6 +58,19 @@ export interface HonourStandingView {
   readonly entries: readonly HonourStandingEntry[];
 }
 
+/** The viewer's own rules for today's orders, with today's modifiers applied: what planning needs. */
+export interface OrderRulesView {
+  readonly maxMoveOrders: number;
+  /** Zones each unit type may move in one order; 0 means it cannot move today. */
+  readonly moveRange: UnitTypeRecord<number>;
+  readonly recruitCost: UnitTypeRecord<number>;
+  readonly upgradeCost: number;
+  /** Every upgrade in the match, in content order. */
+  readonly upgradeIds: readonly string[];
+  /** What the viewer's commander's ability is aimed at. */
+  readonly abilityTargetKind: AbilityTargetKind;
+}
+
 /**
  * Everything one player may see. Built only by `filterForPlayer`; renderers read nothing else.
  * Hidden data never appears here, not even in fields a UI ignores.
@@ -78,6 +93,7 @@ export interface PlayerView {
   readonly spiesAvailable: boolean;
   readonly spyCost: number;
   readonly unitCountsVisible: boolean;
+  readonly orderRules: OrderRulesView;
   readonly honours: readonly HonourStandingView[];
   /** The replay of the latest resolved night, filtered for the viewer. */
   readonly lastNight: readonly VisibleEvent[];

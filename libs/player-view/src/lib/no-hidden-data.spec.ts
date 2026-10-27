@@ -59,8 +59,13 @@ function namesNonLineType(record: JsonRecord): boolean {
   );
 }
 
+/** The order rules are the public price list: keyed by every unit type by design, they say nothing of armies. */
+function withoutPublicRules(view: PlayerView): JsonRecord {
+  return { ...view, orderRules: null };
+}
+
 function revealsNonLineUnits(view: PlayerView): readonly JsonRecord[] {
-  return objectsIn(view).filter(
+  return objectsIn(withoutPublicRules(view)).filter(
     (record) => countsNonLineUnits(record) || namesNonLineType(record),
   );
 }
