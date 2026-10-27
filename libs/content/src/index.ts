@@ -5,3 +5,4 @@ export * from './lib/modifiers/commanders';
 export * from './lib/modifiers/events';
 export * from './lib/config/honours';
 export * from './lib/config/match-timing';
+export * from './lib/maps/hex-map-rules';

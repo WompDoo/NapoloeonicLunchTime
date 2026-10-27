@@ -13,7 +13,11 @@ export interface TownRules {
   readonly spacing: number;
   /** Every player has one town this many moves from their capital, nearer them than anyone else. */
   readonly homeTownDistance: number;
-  /** Relative chances of each kind. Every home town in a match is the same kind. */
+  /** The other towns lie where a hex's two nearest capitals are at most this many moves apart in distance. */
+  readonly contestedMargin: number;
+  /** Every home town is this kind, so no player starts with a better town than another. */
+  readonly homeTownKind: TownKind;
+  /** Relative chances of each kind, for the contested towns. */
   readonly kindWeights: Readonly<Record<TownKind, number>>;
 }
 
@@ -40,6 +44,8 @@ export interface MapGenerationRules {
   readonly coastErosionChance: number;
   /** A hex the sea took comes back when at least this many of its neighbours are land: no one-hex inlets. */
   readonly coastFillNeighbours: number;
+  /** A land hex with fewer land neighbours than this is a spur, and the sea takes it. */
+  readonly coastSpurNeighbours: number;
   readonly towns: TownRules;
   readonly mountainRanges: TerrainPatchRules;
   readonly lakes: TerrainPatchRules;

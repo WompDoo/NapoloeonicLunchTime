@@ -41,3 +41,15 @@ export * from './lib/replay/replay-events';
 export * from './lib/resolution/resolution-phases';
 export { CORE_STEP_PRIORITY } from './lib/resolution/run-phase';
 export * from './lib/resolution/resolve-turn';
+export * from './lib/hex/hex';
+export * from './lib/hex/hex-map';
+export {
+  cornersOfHex,
+  edgesAtCorner,
+  hexCorner,
+  hexCornerId,
+} from './lib/hex/hex-corners';
+export type { HexCorner } from './lib/hex/hex-corners';
+export * from './lib/hex/territory';
+export * from './lib/hex/generation/map-generation-rules';
+export { generateHexMap } from './lib/hex/generation/generate-hex-map';

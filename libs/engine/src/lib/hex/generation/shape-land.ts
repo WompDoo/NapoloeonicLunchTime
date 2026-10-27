@@ -29,7 +29,7 @@ export const shapeLand = (draft: MapDraft): MapDraft => {
       erode(draft, land, isCarvable, pass),
     start,
   );
-  const filled = fillInlets(draft, start, eroded);
+  const filled = trimSpurs(draft, fillInlets(draft, start, eroded), isCarvable);
   const filledIds = new Set(filled.map(hexId));
   const connected = reachableFrom(hexId(HEX_ORIGIN), (id): readonly HexId[] =>
     neighbourIdsOnMap(hexOfId(id), filledIds),
@@ -82,6 +82,20 @@ function isCoastal(
   isCarvable: (hex: Hex) => boolean,
 ): boolean {
   return isCarvable(hex) && isEdgeHex(hex, onLand);
+}
+
+/** Takes coastal hexes that stick out into the sea with too few land neighbours. */
+function trimSpurs(
+  draft: MapDraft,
+  land: readonly Hex[],
+  isCarvable: (hex: Hex) => boolean,
+): readonly Hex[] {
+  const onLand = new Set(land.map(hexId));
+  return land.filter(
+    (hex): boolean =>
+      !isCarvable(hex) ||
+      neighbourIdsOnMap(hex, onLand).length >= draft.rules.coastSpurNeighbours,
+  );
 }
 
 /** Puts back carved hexes that land nearly surrounds. */

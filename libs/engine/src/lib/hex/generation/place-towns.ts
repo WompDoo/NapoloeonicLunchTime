@@ -1,5 +1,5 @@
 import type { Hex } from '../hex';
-import { HEX_ORIGIN, hexDistance, hexId } from '../hex';
+import { hexDistance, hexId } from '../hex';
 import type { TownKind } from '../hex-map';
 import { TOWN_KINDS } from '../hex-map';
 import { seededFraction } from '../../core/random';
@@ -9,13 +9,13 @@ import { countFor, mapLabel, pickSeeded } from './map-draft';
 
 /**
  * Towns: first one per player, `homeTownDistance` from their capital and nearer them than anyone else, all of
- * the same kind; then the rest towards the centre, nearer it than any capital. Towns keep `spacing` from each
+ * the home town kind; then the rest on contested ground between players. Towns keep `spacing` from each
  * other and from every capital.
  */
 export const placeTowns = (draft: MapDraft): MapDraft => {
-  const homeKind = kindFor(draft, 'home');
   const withHomeTowns = draft.capitals.reduce<MapDraft>(
-    (current, capital): MapDraft => placeHomeTown(current, capital, homeKind),
+    (current, capital): MapDraft =>
+      placeHomeTown(current, capital, draft.rules.towns.homeTownKind),
     draft,
   );
   const centralCount = Math.max(
@@ -73,11 +73,15 @@ function placeCentralTown(draft: MapDraft, index: number): MapDraft {
   return withTown(draft, hex, kindFor(draft, 'central', index));
 }
 
-/** Nearer the centre of the map than any capital. */
+/** Contested ground: the two nearest capitals are no more than `contestedMargin` moves apart in distance. */
 function isCentral(draft: MapDraft, hex: Hex): boolean {
-  return draft.capitals.every(
-    (capital): boolean =>
-      hexDistance(capital.hex, hex) > hexDistance(HEX_ORIGIN, hex),
+  const [nearest, second] = draft.capitals
+    .map((capital): number => hexDistance(capital.hex, hex))
+    .toSorted((left, right): number => left - right);
+  return (
+    requirePresent(second, 'a second capital') -
+      requirePresent(nearest, 'a capital') <=
+    draft.rules.towns.contestedMargin
   );
 }
 
