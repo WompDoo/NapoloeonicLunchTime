@@ -1,0 +1,60 @@
+<div class="grid gap-4 py-4">
+  <lc-day-header [match]="match()" />
+
+  <div class="tabs">
+    <div
+      class="flex gap-1 overflow-x-auto"
+      role="tablist"
+      [attr.aria-label]="'match.tabs' | t"
+    >
+      @for (tab of tabs; track tab) {
+        <button
+          #tabButton
+          type="button"
+          role="tab"
+          class="tab"
+          [id]="'tab-' + tab"
+          [attr.aria-selected]="tab === selectedTab()"
+          [attr.aria-controls]="'panel-' + tab"
+          [tabindex]="tab === selectedTab() ? 0 : -1"
+          (click)="selectTab(tab)"
+          (keydown)="onTabKey($event)"
+        >
+          {{ tabLabels[tab] | t }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div
+    role="tabpanel"
+    [id]="'panel-' + selectedTab()"
+    [attr.aria-labelledby]="'tab-' + selectedTab()"
+  >
+    @switch (selectedTab()) {
+      @case ('map') {
+        <lc-map-tab
+          [match]="match()"
+          [roster]="roster()"
+          [(selectedZoneId)]="selectedZoneId"
+          (planMove)="planMoveFrom($event)"
+          (refreshNeeded)="refreshNeeded.emit()"
+        />
+      }
+      @case ('orders') {
+        <lc-orders-panel
+          [match]="match()"
+          [roster]="roster()"
+          [(planFromZoneId)]="planFromZoneId"
+          (changed)="changed.emit($event)"
+        />
+      }
+      @case ('night') {
+        <lc-replay-viewer [view]="match().view" [roster]="roster()" />
+      }
+      @case ('honours') {
+        <lc-honours-tab [view]="match().view" [roster]="roster()" />
+      }
+    }
+  </div>
+</div>

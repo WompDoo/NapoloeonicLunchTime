@@ -1,0 +1,75 @@
+<section class="lc-panel" aria-labelledby="replay-title">
+  <div class="grid gap-4 p-4">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h2 id="replay-title" class="replay__title">{{ 'replay.title' | t }}</h2>
+      @if (narrations().length > 0) {
+        <button
+          type="button"
+          class="lc-button lc-button--quiet"
+          [attr.aria-pressed]="showAll()"
+          (click)="toggleAll()"
+        >
+          {{ 'replay.all' | t }}
+        </button>
+      }
+    </div>
+
+    @if (current(); as narration) {
+      @if (showAll()) {
+        <ol class="grid gap-2">
+          @for (entry of narrations(); track $index) {
+            <li class="replay__entry">
+              <p class="replay__text">{{ entry.text }}</p>
+              @for (detail of entry.details; track $index) {
+                <p class="replay__detail">{{ detail }}</p>
+              }
+            </li>
+          }
+        </ol>
+      } @else {
+        <div class="grid gap-4 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <lc-campaign-map
+            [zones]="view().zones"
+            [connections]="view().connections"
+            [roster]="roster()"
+            [highlightedZoneIds]="narration.zoneIds"
+          />
+          <div class="grid content-start gap-3">
+            <p class="replay__counter">
+              {{
+                'replay.step'
+                  | t: { current: step() + 1, total: narrations().length }
+              }}
+            </p>
+            <div class="replay__entry" aria-live="polite">
+              <p class="replay__text">{{ narration.text }}</p>
+              @for (detail of narration.details; track $index) {
+                <p class="replay__detail">{{ detail }}</p>
+              }
+            </div>
+            <div class="flex gap-2">
+              <button
+                type="button"
+                class="lc-button lc-button--quiet"
+                [disabled]="step() === 0"
+                (click)="previous()"
+              >
+                {{ 'replay.previous' | t }}
+              </button>
+              <button
+                type="button"
+                class="lc-button"
+                [disabled]="step() === narrations().length - 1"
+                (click)="next()"
+              >
+                {{ 'replay.next' | t }}
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    } @else {
+      <lc-state-panel state="empty" message="replay.empty" />
+    }
+  </div>
+</section>

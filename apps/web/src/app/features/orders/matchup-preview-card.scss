@@ -1,0 +1,44 @@
+.preview {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--panel-sunk);
+}
+
+.preview__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+}
+
+.preview__text,
+.preview__hint,
+.preview__caveat {
+  margin: 0;
+}
+
+.preview__hint {
+  font-size: 0.875rem;
+}
+
+.preview__number {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: right;
+}
+
+.preview__verdict {
+  margin: 0;
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.preview__verdict--good {
+  color: var(--success);
+}
+
+.preview__caveat {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}

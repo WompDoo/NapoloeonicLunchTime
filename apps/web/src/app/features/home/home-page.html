@@ -1,0 +1,67 @@
+<div class="grid gap-8 py-6 md:grid-cols-2">
+  <section aria-labelledby="campaigns-title">
+    <h1 id="campaigns-title" class="page-title">{{ 'home.title' | t }}</h1>
+    <div class="pt-4">
+      @if (sessions().length === 0) {
+        <lc-state-panel state="empty" message="home.empty" />
+      } @else {
+        <ul class="campaigns">
+          @for (session of sessions(); track session.matchId) {
+            <li class="campaign">
+              <a
+                class="campaign__link"
+                [routerLink]="['/matches', session.matchId]"
+              >
+                <span class="campaign__name">{{
+                  'home.match.as' | t: { name: session.name }
+                }}</span>
+                <span class="campaign__open"
+                  >{{ 'home.match.open' | t }} →</span
+                >
+              </a>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </section>
+
+  <section class="lc-panel" aria-labelledby="create-title">
+    <form class="grid gap-4 p-5" (ngSubmit)="createMatch()">
+      <h2 id="create-title" class="section-title">
+        {{ 'home.create.title' | t }}
+      </h2>
+      <p class="intro">{{ 'home.create.intro' | t }}</p>
+      <div class="grid gap-2">
+        <label class="lc-label" for="time-zone">{{
+          'home.create.timeZone' | t
+        }}</label>
+        <select
+          id="time-zone"
+          name="timeZone"
+          class="lc-input"
+          [(ngModel)]="timeZone"
+          [attr.aria-describedby]="createError() ? 'create-error' : null"
+        >
+          @for (zone of timeZones; track zone) {
+            <option [value]="zone">{{ zone }}</option>
+          }
+        </select>
+        @if (createError(); as error) {
+          <p id="create-error" class="lc-field-error">
+            {{ errorKeyOf(error) | t }}
+          </p>
+        }
+      </div>
+      <div>
+        <button
+          type="submit"
+          class="lc-button"
+          [disabled]="create.status() === 'pending'"
+        >
+          {{ 'home.create.submit' | t }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>

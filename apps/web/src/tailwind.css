@@ -1,0 +1,22 @@
+@import 'tailwindcss' source(none);
+@source './app';
+
+/*
+ * Utilities are for layout and spacing only; visual styling lives in component SCSS. The visual scales
+ * are removed, so colour, type, shadow and radius utilities do not exist and cannot creep into styled
+ * components.
+ */
+@theme {
+  --color-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --font-weight-*: initial;
+  --tracking-*: initial;
+  --leading-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+  --radius-*: initial;
+  --blur-*: initial;
+}

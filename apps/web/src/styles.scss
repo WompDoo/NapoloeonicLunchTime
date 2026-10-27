@@ -1,0 +1,144 @@
+/*
+ * Design tokens. A campaign map room: survey-paper neutrals with a cool green bias, ink, and brass for
+ * what you can act on. Each seat has a regimental colour, used for zones, names and battle sides.
+ */
+:root {
+  color-scheme: light;
+  --paper: #eef1ec;
+  --panel: #fbfcfa;
+  --panel-sunk: #e3e8e2;
+  --ink: #1b262d;
+  --muted: #56646b;
+  --line: #c3ccc5;
+  --accent: #8d5f17;
+  --accent-ink: #fffaf0;
+  --focus: #1f5fbf;
+  --danger: #a3302a;
+  --success: #2c6a43;
+  --seat-1: #2c5aa0;
+  --seat-2: #b0342c;
+  --seat-3: #2c6a43;
+  --seat-4: #9a7410;
+  --neutral-zone: #d9ded8;
+  --font-display: 'IBM Plex Sans Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --radius: 6px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --paper: #121a17;
+    --panel: #1a2420;
+    --panel-sunk: #0d1311;
+    --ink: #e2e8e3;
+    --muted: #9aa7a1;
+    --line: #2f3c36;
+    --accent: #d6a24b;
+    --accent-ink: #1b1305;
+    --focus: #7fb0ff;
+    --danger: #f07c72;
+    --success: #74c995;
+    --seat-1: #7aa5ec;
+    --seat-2: #f08a80;
+    --seat-3: #74c995;
+    --seat-4: #e2be5a;
+    --neutral-zone: #2a3530;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  line-height: 1.15;
+  text-wrap: balance;
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Shared visual classes. Components use these or their own; never colour utilities. */
+.lc-button {
+  font: 600 0.95rem/1 var(--font-display);
+  letter-spacing: 0.02em;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--accent-ink);
+  padding: 0.7rem 1rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.lc-button--quiet {
+  background: transparent;
+  color: var(--accent);
+}
+
+.lc-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.lc-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.lc-label {
+  font: 600 0.75rem/1.2 var(--font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.lc-input {
+  font: inherit;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.75rem;
+  min-height: 44px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.lc-field-error {
+  color: var(--danger);
+  font-size: 0.875rem;
+}
+
+.lc-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

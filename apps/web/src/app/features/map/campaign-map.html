@@ -1,0 +1,105 @@
+<p id="map-instructions" class="lc-visually-hidden">
+  {{ 'map.instructions' | t }}
+</p>
+<svg
+  class="map"
+  role="group"
+  [attr.viewBox]="viewBox()"
+  [attr.aria-label]="'map.title' | t"
+  aria-describedby="map-instructions"
+>
+  @for (road of roads(); track road.key) {
+    <line
+      class="map__road"
+      [attr.x1]="road.from.x"
+      [attr.y1]="road.from.y"
+      [attr.x2]="road.to.x"
+      [attr.y2]="road.to.y"
+    />
+  }
+  @for (place of placed(); track place.zone.zoneId) {
+    <g
+      #zoneElement
+      class="zone"
+      role="button"
+      [class.zone--selected]="place.zone.zoneId === selectedZoneId()"
+      [attr.data-zone-id]="place.zone.zoneId"
+      [attr.tabindex]="place.zone.zoneId === focusZoneId() ? 0 : -1"
+      [attr.aria-pressed]="place.zone.zoneId === selectedZoneId()"
+      [attr.aria-label]="label(place.zone)"
+      (click)="select(place.zone.zoneId)"
+      (keydown)="onKey($event, place.zone)"
+    >
+      @if (isHighlighted(place)) {
+        <circle
+          class="zone__highlight"
+          [attr.cx]="place.x"
+          [attr.cy]="place.y"
+          [attr.r]="highlightRadius"
+        />
+      }
+      @switch (place.zone.kind) {
+        @case ('capital') {
+          <rect
+            class="zone__shape"
+            [attr.x]="place.x - zoneRadius"
+            [attr.y]="place.y - zoneRadius"
+            [attr.width]="capitalSide"
+            [attr.height]="capitalSide"
+            [style.fill]="roster().colourOf(place.zone.ownerId)"
+          />
+        }
+        @case ('city') {
+          <circle
+            class="zone__ring"
+            [attr.cx]="place.x"
+            [attr.cy]="place.y"
+            [attr.r]="cityRingRadius"
+          />
+          <circle
+            class="zone__shape"
+            [attr.cx]="place.x"
+            [attr.cy]="place.y"
+            [attr.r]="zoneRadius"
+            [style.fill]="roster().colourOf(place.zone.ownerId)"
+          />
+        }
+        @default {
+          <circle
+            class="zone__shape"
+            [attr.cx]="place.x"
+            [attr.cy]="place.y"
+            [attr.r]="zoneRadius"
+            [style.fill]="roster().colourOf(place.zone.ownerId)"
+          />
+        }
+      }
+      <text
+        class="zone__name"
+        aria-hidden="true"
+        [attr.x]="place.x"
+        [attr.y]="place.y + nameOffsetY"
+      >
+        {{ place.zone.zoneId }}
+      </text>
+      <text
+        class="zone__army"
+        aria-hidden="true"
+        [attr.x]="place.x"
+        [attr.y]="place.y + armyOffsetY"
+      >
+        {{ armyShort(place.zone) }}
+      </text>
+      @if (place.zone.ownerId !== null) {
+        <text
+          class="zone__seat"
+          aria-hidden="true"
+          [attr.x]="place.x + seatBadgeOffset"
+          [attr.y]="place.y - seatBadgeOffset"
+        >
+          {{ roster().seatOf(place.zone.ownerId) }}
+        </text>
+      }
+    </g>
+  }
+</svg>

@@ -1,0 +1,84 @@
+:host {
+  display: block;
+}
+
+.map {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  touch-action: manipulation;
+}
+
+.map__road {
+  stroke: var(--line);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.zone {
+  cursor: pointer;
+  outline: none;
+}
+
+.zone__shape {
+  stroke: var(--ink);
+  stroke-width: 2;
+  fill-opacity: 0.85;
+}
+
+.zone__ring {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.zone__highlight {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 4;
+  stroke-dasharray: 6 4;
+}
+
+.zone--selected .zone__shape {
+  stroke: var(--accent);
+  stroke-width: 5;
+}
+
+.zone:focus-visible .zone__shape {
+  stroke: var(--focus);
+  stroke-width: 6;
+}
+
+.zone__name,
+.zone__army,
+.zone__seat {
+  fill: var(--ink);
+  text-anchor: middle;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 3px;
+}
+
+.zone__name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.zone__army {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.zone__seat {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+@media (forced-colors: active) {
+  .zone:focus-visible .zone__shape {
+    stroke: Highlight;
+  }
+}

@@ -1,0 +1,134 @@
+<div class="grid gap-6 py-6">
+  <header class="grid gap-1">
+    <h1 class="lobby__title">{{ 'lobby.title' | t }}</h1>
+    <p class="lobby__muted">{{ 'lobby.startRule' | t }}</p>
+  </header>
+
+  <section class="lc-panel" aria-labelledby="invite-title">
+    <div class="grid gap-3 p-5">
+      <h2 id="invite-title" class="lobby__heading">{{ 'lobby.invite' | t }}</h2>
+      <p id="invite-hint" class="lobby__muted">{{ 'lobby.inviteHint' | t }}</p>
+      <div class="flex flex-wrap gap-2">
+        <input
+          class="lc-input lobby__link"
+          readonly
+          [value]="inviteLink()"
+          [attr.aria-label]="'lobby.invite' | t"
+          aria-describedby="invite-hint"
+        />
+        <button
+          type="button"
+          class="lc-button lc-button--quiet"
+          (click)="copyInvite()"
+        >
+          {{ (copied() ? 'common.copied' : 'common.copy') | t }}
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="lc-panel" aria-labelledby="members-title">
+    <div class="grid gap-3 p-5">
+      <h2 id="members-title" class="lobby__heading">
+        {{ 'lobby.members' | t: { count: lobby().members.length } }}
+        <span class="lobby__muted"
+          >·
+          {{
+            'lobby.seats'
+              | t: { min: lobby().minimumPlayers, max: lobby().maximumPlayers }
+          }}</span
+        >
+      </h2>
+      <ul class="grid gap-2">
+        @for (member of lobby().members; track member.playerId) {
+          <li class="member">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <span class="member__name">
+                {{
+                  isYou(member)
+                    ? ('common.youName' | t: { name: member.name })
+                    : member.name
+                }}
+              </span>
+              <span class="member__state">
+                {{
+                  (member.hasPicked ? 'lobby.picked' : 'lobby.notPicked') | t
+                }}
+                ·
+                <span [class.member__ready]="member.ready">{{
+                  (member.ready ? 'lobby.ready' : 'lobby.notReady') | t
+                }}</span>
+              </span>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="lc-panel" aria-labelledby="pick-title">
+    <fieldset class="grid gap-3 p-5" [disabled]="pick.status() === 'pending'">
+      <legend id="pick-title" class="lobby__heading">
+        {{ 'lobby.pickTitle' | t }}
+      </legend>
+      <p class="lobby__muted">{{ 'lobby.pickHint' | t }}</p>
+      <div class="grid gap-3 sm:grid-cols-2">
+        @for (commanderId of lobby().commanderIds; track commanderId) {
+          <label
+            class="commander"
+            [class.commander--chosen]="commanderId === lobby().yourCommanderId"
+          >
+            <span class="flex items-center gap-2">
+              <input
+                type="radio"
+                name="commander"
+                [value]="commanderId"
+                [checked]="commanderId === lobby().yourCommanderId"
+                (change)="choose(commanderId)"
+              />
+              <span class="commander__name">{{
+                commanderName(commanderId) | t
+              }}</span>
+            </span>
+            <span class="grid gap-1 pt-2">
+              <span class="commander__text"
+                ><strong>{{ 'lobby.passive' | t }}:</strong>
+                {{ commanderPassive(commanderId) | t }}</span
+              >
+              <span class="commander__text"
+                ><strong>{{ 'lobby.ability' | t }}:</strong>
+                <em>{{ commanderAbilityName(commanderId) | t }}</em
+                >. {{ commanderAbility(commanderId) | t }}</span
+              >
+            </span>
+          </label>
+        }
+      </div>
+    </fieldset>
+  </section>
+
+  @if (lobbyError(); as error) {
+    <p class="lc-field-error" role="alert">{{ errorKeyOf(error) | t }}</p>
+  }
+
+  <div class="flex flex-wrap gap-3">
+    <button
+      type="button"
+      class="lc-button"
+      [disabled]="
+        lobby().yourCommanderId === null || ready.status() === 'pending'
+      "
+      (click)="toggleReady()"
+    >
+      {{ (amReady() ? 'lobby.unready' : 'lobby.getReady') | t }}
+    </button>
+    <button
+      type="button"
+      class="lc-button lc-button--quiet"
+      [disabled]="leave.status() === 'pending'"
+      (click)="leaveLobby()"
+    >
+      {{ 'lobby.leave' | t }}
+    </button>
+  </div>
+</div>

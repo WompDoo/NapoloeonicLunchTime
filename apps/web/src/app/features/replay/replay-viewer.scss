@@ -1,0 +1,28 @@
+.replay__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+}
+
+.replay__counter {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.replay__entry {
+  padding: 0.625rem 0.75rem;
+  border-left: 3px solid var(--accent);
+  background: var(--panel-sunk);
+}
+
+.replay__text {
+  margin: 0;
+  font-weight: 600;
+}
+
+.replay__detail {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}

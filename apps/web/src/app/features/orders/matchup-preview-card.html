@@ -1,0 +1,81 @@
+<section class="preview" aria-labelledby="preview-title" aria-live="polite">
+  <div class="grid gap-2 p-3">
+    <h3 id="preview-title" class="preview__title">{{ 'preview.title' | t }}</h3>
+    @switch (preview().kind) {
+      @case ('reinforcement') {
+        <p class="preview__text">{{ 'preview.reinforcement' | t }}</p>
+      }
+      @case ('unopposed') {
+        <p class="preview__text">{{ 'preview.unopposed' | t }}</p>
+      }
+      @case ('countHidden') {
+        <p class="preview__text">{{ 'preview.countHidden' | t }}</p>
+      }
+    }
+    @if (preview(); as current) {
+      @if (current.kind === 'countOnly') {
+        <p class="preview__text">
+          {{ 'preview.countOnly' | t: { count: current.defenderCount } }}
+        </p>
+      }
+      @if (current.kind === 'estimate') {
+        <p class="preview__text">{{ 'preview.estimate' | t }}</p>
+        <dl class="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1">
+          <dt>{{ 'preview.yourStrength' | t }}</dt>
+          <dd class="preview__number">
+            {{ strength(current.estimate.attacker.totalStrength) }}
+          </dd>
+          <dt>{{ 'preview.theirStrength' | t }}</dt>
+          <dd class="preview__number">
+            {{ strength(current.estimate.defender.totalStrength) }}
+          </dd>
+        </dl>
+        <p
+          class="preview__verdict"
+          [class.preview__verdict--good]="
+            current.estimate.likelyWinner === 'you'
+          "
+        >
+          {{
+            (current.estimate.likelyWinner === 'you'
+              ? 'preview.likelyYou'
+              : 'preview.likelyDefender'
+            ) | t
+          }}
+        </p>
+        @if (current.unidentified > 0) {
+          <p class="preview__text">
+            {{ 'preview.unidentified' | t: { count: current.unidentified } }}
+          </p>
+        }
+      }
+      @for (hint of hintsOf(current); track hint.unitType) {
+        @if (hint.beats.length > 0) {
+          <p class="preview__hint">
+            {{
+              'preview.beats'
+                | t
+                  : {
+                      unit: unitName(hint.unitType),
+                      targets: unitNames(hint.beats),
+                    }
+            }}
+          </p>
+        }
+        @if (hint.beatenBy.length > 0) {
+          <p class="preview__hint">
+            {{
+              'preview.beatenBy'
+                | t
+                  : {
+                      unit: unitName(hint.unitType),
+                      threats: unitNames(hint.beatenBy),
+                    }
+            }}
+          </p>
+        }
+      }
+    }
+    <p class="preview__caveat">{{ 'preview.caveat' | t }}</p>
+  </div>
+</section>

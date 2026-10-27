@@ -1,0 +1,56 @@
+<section class="lc-panel" aria-labelledby="zone-title" aria-live="polite">
+  <div class="grid gap-3 p-4">
+    <h2 id="zone-title" class="details__title">
+      {{ 'zone.title' | t: { zone: zone().zoneId } }}
+    </h2>
+    <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+      <dt class="lc-label">{{ 'map.column.kind' | t }}</dt>
+      <dd class="details__value">{{ kindKey() | t }}</dd>
+      <dt class="lc-label">{{ 'map.column.owner' | t }}</dt>
+      <dd class="details__value">{{ roster().ownerOf(zone().ownerId) }}</dd>
+      <dt class="lc-label">{{ 'map.column.army' | t }}</dt>
+      <dd class="details__value">{{ army() }}</dd>
+    </dl>
+
+    @if (report(); as report) {
+      <p class="details__report">
+        <strong>{{ 'zone.reportToday' | t }}</strong
+        >: {{ reportUnits(report) }}
+        @if (report.unidentified > 0) {
+          · {{ 'spies.unidentified' | t: { count: report.unidentified } }}
+        }
+      </p>
+    }
+
+    <div class="flex flex-wrap gap-2">
+      @if (spyAvailability() === 'available') {
+        <button
+          type="button"
+          class="lc-button"
+          [disabled]="spy.status() === 'pending'"
+          (click)="sendSpy()"
+        >
+          {{ 'zone.spy' | t: { cost: match().view.spyCost } }}
+        </button>
+      }
+      @if (canPlanMove() && hasUnits()) {
+        <button
+          type="button"
+          class="lc-button lc-button--quiet"
+          (click)="planMove.emit(zone().zoneId)"
+        >
+          {{ 'zone.planMove' | t }}
+        </button>
+      }
+    </div>
+
+    @if (spyNote(); as note) {
+      <p class="details__note">
+        {{ note | t: { cost: match().view.spyCost } }}
+      </p>
+    }
+    @if (spyError(); as error) {
+      <p class="lc-field-error" role="alert">{{ errorKeyOf(error) | t }}</p>
+    }
+  </div>
+</section>

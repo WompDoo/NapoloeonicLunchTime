@@ -1,0 +1,80 @@
+<div class="grid gap-4">
+  <p class="ability__text">
+    <strong>{{ commanderAbilityName(view().me.commanderId) | t }}</strong
+    >: {{ commanderAbility(view().me.commanderId) | t }}
+  </p>
+  @if (unavailable(); as message) {
+    <lc-state-panel state="empty" [message]="message" />
+  } @else {
+    <form class="grid gap-4" (ngSubmit)="submit()">
+      @switch (targetKind()) {
+        @case ('ownedZone') {
+          <div class="grid gap-1">
+            <label class="lc-label" for="ability-zone">{{
+              'orders.target' | t
+            }}</label>
+            <select
+              id="ability-zone"
+              name="zone"
+              class="lc-input"
+              [(ngModel)]="zoneId"
+            >
+              <option [ngValue]="null">{{ 'orders.choose' | t }}</option>
+              @for (zone of zones(); track zone.zoneId) {
+                <option [ngValue]="zone.zoneId">{{ zone.zoneId }}</option>
+              }
+            </select>
+          </div>
+        }
+        @case ('reinforcement') {
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div class="grid gap-1">
+              <label class="lc-label" for="ability-from">{{
+                'orders.from' | t
+              }}</label>
+              <select
+                id="ability-from"
+                name="from"
+                class="lc-input"
+                [(ngModel)]="fromZoneId"
+              >
+                <option [ngValue]="null">{{ 'orders.choose' | t }}</option>
+                @for (zone of startZones(); track zone.zoneId) {
+                  <option [ngValue]="zone.zoneId">{{ zone.zoneId }}</option>
+                }
+              </select>
+            </div>
+            <div class="grid gap-1">
+              <label class="lc-label" for="ability-to">{{
+                'orders.to' | t
+              }}</label>
+              <select
+                id="ability-to"
+                name="to"
+                class="lc-input"
+                [(ngModel)]="toZoneId"
+              >
+                <option [ngValue]="null">{{ 'orders.choose' | t }}</option>
+                @for (zoneId of destinations(); track zoneId) {
+                  <option [ngValue]="zoneId">{{ zoneId }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          @if (fromZoneId() !== null) {
+            <lc-unit-picker
+              idPrefix="ability-"
+              [available]="available()"
+              [(units)]="units"
+            />
+          }
+        }
+      }
+      <div>
+        <button type="submit" class="lc-button" [disabled]="order() === null">
+          {{ 'orders.addToList' | t }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

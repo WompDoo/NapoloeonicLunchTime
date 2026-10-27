@@ -1,0 +1,201 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`narrateNight the scripted week as Kutuzov saw it night 1 1`] = `
+"Ana recruited 1 unit at A1 [A1]
+Ana moved 4 units: A1 → A2 [A1 A2]
+Ana moved 1 unit: A1 → B1 [A1 B1]
+Bo moved 4 units: A4 → A3 [A4 A3]
+Bo moved 1 unit: A4 → B4 [A4 B4]
+Cy (you) moved 3 line: D1 → C1 [D1 C1]
+Cy (you) moved 1 cavalry: D1 → D2 [D1 D2]
+Di moved 2 units: D4 → C4 → C3 [D4 C4 C3]
+Di moved 1 unit: D4 → D3 [D4 D3]
+Ana captured A2 [A2]
+Bo captured A3 [A3]
+Ana captured B1 [B1]
+Bo captured B4 [B4]
+Cy (you) captured C1 [C1]
+Di captured C3 [C3]
+Cy (you) captured D2 [D2]
+Di captured D3 [D3]
+Cy (you) produced 5 supply []"
+`;
+
+exports[`narrateNight the scripted week as Kutuzov saw it night 2 1`] = `
+"Di recruited 2 units at D4 [D4]
+Ana moved 1 unit: A1 → A2 [A1 A2]
+Ana moved 4 units: A2 → B2 [A2 B2]
+Bo moved 4 units: A3 → B3 [A3 B3]
+Cy (you) moved 3 line: C1 → C2 [C1 C2]
+Ana captured B2 [B2]
+Bo captured B3 [B3]
+Cy (you) captured C2 [C2]
+Cy (you) produced 7 supply []
+Announced: Typhus comes into play on day 3 []"
+`;
+
+exports[`narrateNight the scripted week as Kutuzov saw it night 3 1`] = `
+"Bo moved 4 units: B3 → B2 [B3 B2]
+Cy (you) moved 3 line: C2 → C3 [C2 C3]
+Battle forms at B2: Ana defending with 4 units; Bo attacking with 4 units [B2]
+Battle forms at C3: Cy (you) attacking with 3 line; Di defending with 2 cavalry [C3]
+Battle at B2: Ana wins [B2]
+    Ana (defending): 4 → 2
+    Bo (attacking): 2 → 0
+Battle at C3: Cy (you) wins [C3]
+    Cy (you) (attacking): 3 line → 1 line, strength 6.0
+    Di (defending): 2 cavalry → no units, strength 2.5
+Cy (you) captured C3 from Di [C3]
+Ana lost 1 unit at A1 [A1]
+Bo lost 1 unit at A4 [A4]
+Cy (you) lost 1 skirmisher at D1 [D1]
+Di lost 1 unit at D4 [D4]
+Cy (you) produced 9 supply []
+Ana scored 6 points for 2 cities []
+Bo scored 6 points for 2 cities []
+Cy (you) scored 9 points for 3 cities []
+Di scored 3 points for 1 city []
+Typhus wore off []"
+`;
+
+exports[`narrateNight the scripted week as Kutuzov saw it night 4 1`] = `
+"Bo recruited 3 units at A4 [A4]
+Di recruited 2 units at D4 [D4]
+Bo moved 1 unit: B4 → B3 [B4 B3]
+Di moved 1 unit: D3 → C3 [D3 C3]
+Battle forms at C3: Cy (you) defending with 1 line; Di attacking with 1 skirmisher [C3]
+Battle at C3: Di wins [C3]
+    Cy (you) (defending): 1 line → no units, strength 1.3
+    Di (attacking): 1 skirmisher → 1 skirmisher, strength 2.0
+Cy (you) retreated 1 line: C3 → C2 [C3 C2]
+Di captured C3 from Cy (you) [C3]
+Cy (you) produced 7 supply []"
+`;
+
+exports[`narrateNight the scripted week as Kutuzov saw it night 5 1`] = `
+"Bo moved 1 unit: B3 → B2 [B3 B2]
+Di moved 1 unit: C3 → C2 [C3 C2]
+Di moved 1 unit: D4 → C4 [D4 C4]
+Di moved 2 units: D4 → D3 → D2 [D4 D3 D2]
+Battle forms at B2: Ana defending with 2 units; Bo attacking with 1 unit [B2]
+Battle forms at C2: Cy (you) defending with 1 line; Di attacking with 1 skirmisher [C2]
+Battle forms at D2: Cy (you) defending with 1 cavalry; Di attacking with 2 cavalry [D2]
+The battle at B2 ended under bombardment: Ana left standing [B2]
+Battle at C2: Di wins [C2]
+    Cy (you) (defending): 1 line → no units, strength 1.3
+    Di (attacking): 1 skirmisher → 1 skirmisher, strength 2.0
+Cy (you) retreated 1 line: C2 → C1 [C2 C1]
+Battle at D2: Di wins [D2]
+    Cy (you) (defending): 1 cavalry → no units, strength 1.3
+    Di (attacking): 2 cavalry → 1 cavalry, strength 2.0
+Cy (you) retreated 1 cavalry: D2 → D1 [D2 D1]
+Di captured C2 from Cy (you) [C2]
+Di captured C4 [C4]
+Di captured D2 from Cy (you) [D2]
+Cy (you) produced 4 supply []
+Ana scored 12 points for 2 cities []
+Bo scored 12 points for 2 cities []
+Cy (you) scored 6 points for 1 city []
+Di scored 18 points for 3 cities []"
+`;
+
+exports[`narrateNight the scripted week as Napoleon saw it night 1 1`] = `
+"Ana (you) recruited 1 line at A1 [A1]
+Ana (you) moved 2 line, 2 cavalry: A1 → A2 [A1 A2]
+Ana (you) moved 1 skirmisher: A1 → B1 [A1 B1]
+Bo moved 4 units: A4 → A3 [A4 A3]
+Bo moved 1 unit: A4 → B4 [A4 B4]
+Cy moved 3 units: D1 → C1 [D1 C1]
+Cy moved 1 unit: D1 → D2 [D1 D2]
+Di moved 2 units: D4 → C4 → C3 [D4 C4 C3]
+Di moved 1 unit: D4 → D3 [D4 D3]
+Ana (you) captured A2 [A2]
+Bo captured A3 [A3]
+Ana (you) captured B1 [B1]
+Bo captured B4 [B4]
+Cy captured C1 [C1]
+Di captured C3 [C3]
+Cy captured D2 [D2]
+Di captured D3 [D3]
+Ana (you) produced 5 supply []"
+`;
+
+exports[`narrateNight the scripted week as Napoleon saw it night 2 1`] = `
+"Di recruited 2 units at D4 [D4]
+Ana (you) moved 1 gun: A1 → A2 [A1 A2]
+Ana (you) moved 2 line, 2 cavalry: A2 → B2 [A2 B2]
+Bo moved 4 units: A3 → B3 [A3 B3]
+Cy moved 3 units: C1 → C2 [C1 C2]
+Ana (you) captured B2 [B2]
+Bo captured B3 [B3]
+Cy captured C2 [C2]
+Ana (you) produced 7 supply []
+Announced: Typhus comes into play on day 3 []"
+`;
+
+exports[`narrateNight the scripted week as Napoleon saw it night 3 1`] = `
+"Bo moved 4 units: B3 → B2 [B3 B2]
+Cy moved 3 units: C2 → C3 [C2 C3]
+Battle forms at B2: Ana (you) defending with 2 line, 2 cavalry; Bo attacking with 2 cavalry, 2 skirmishers [B2]
+Battle forms at C3: Cy attacking with 3 units; Di defending with 2 units [C3]
+Ana (you)'s 1 gun in A2 bombarded B2: Bo lost 1 cavalry, 1 skirmisher [A2 B2]
+Battle at B2: Ana (you) wins [B2]
+    Ana (you) (defending): 2 line, 2 cavalry → 1 line, 1 cavalry, strength 7.5
+    Bo (attacking): 1 cavalry, 1 skirmisher → no units, strength 2.5
+Battle at C3: Cy wins [C3]
+    Cy (attacking): 3 → 1
+    Di (defending): 2 → 0
+Cy captured C3 from Di [C3]
+Ana (you) lost 1 line at A1 [A1]
+Bo lost 1 unit at A4 [A4]
+Cy lost 1 unit at D1 [D1]
+Di lost 1 unit at D4 [D4]
+Ana (you) produced 7 supply []
+Ana (you) scored 6 points for 2 cities []
+Bo scored 6 points for 2 cities []
+Cy scored 9 points for 3 cities []
+Di scored 3 points for 1 city []
+Typhus wore off []"
+`;
+
+exports[`narrateNight the scripted week as Napoleon saw it night 4 1`] = `
+"Bo recruited 3 units at A4 [A4]
+Di recruited 2 units at D4 [D4]
+Bo moved 1 unit: B4 → B3 [B4 B3]
+Di moved 1 unit: D3 → C3 [D3 C3]
+Battle forms at C3: Cy defending with 1 unit; Di attacking with 1 unit [C3]
+Battle at C3: Di wins [C3]
+    Cy (defending): 1 → 0
+    Di (attacking): 1 → 1
+Cy retreated 1 unit: C3 → C2 [C3 C2]
+Di captured C3 from Cy [C3]
+Ana (you) produced 7 supply []"
+`;
+
+exports[`narrateNight the scripted week as Napoleon saw it night 5 1`] = `
+"Bo moved 1 unit: B3 → B2 [B3 B2]
+Di moved 1 unit: C3 → C2 [C3 C2]
+Di moved 1 unit: D4 → C4 [D4 C4]
+Di moved 2 units: D4 → D3 → D2 [D4 D3 D2]
+Battle forms at B2: Ana (you) defending with 1 line, 1 cavalry; Bo attacking with 1 line [B2]
+Battle forms at C2: Cy defending with 1 unit; Di attacking with 1 unit [C2]
+Battle forms at D2: Cy defending with 1 unit; Di attacking with 2 units [D2]
+Ana (you)'s 1 gun in A2 bombarded B2: Bo lost 1 line [A2 B2]
+The battle at B2 ended under bombardment: Ana (you) left standing [B2]
+Battle at C2: Di wins [C2]
+    Cy (defending): 1 → 0
+    Di (attacking): 1 → 1
+Cy retreated 1 unit: C2 → C1 [C2 C1]
+Battle at D2: Di wins [D2]
+    Cy (defending): 1 → 0
+    Di (attacking): 2 → 1
+Cy retreated 1 unit: D2 → D1 [D2 D1]
+Di captured C2 from Cy [C2]
+Di captured C4 [C4]
+Di captured D2 from Cy [D2]
+Ana (you) produced 7 supply []
+Ana (you) scored 12 points for 2 cities []
+Bo scored 12 points for 2 cities []
+Cy scored 6 points for 1 city []
+Di scored 18 points for 3 cities []"
+`;

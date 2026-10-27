@@ -1,6 +1,6 @@
 # Lunch Campaign
 
-Async, browser-based Napoleonic strategy for 2–6 players, about 15 minutes a day. Orders are written during
+Async, browser-based Napoleonic strategy for 2–4 players, about 15 minutes a day. Orders are written during
 the day and resolve simultaneously overnight; a match lasts one working week.
 
 - **Rules and milestones:** [`docs/spec.md`](docs/spec.md) is the source of truth.
@@ -18,6 +18,7 @@ the day and resolve simultaneously overnight; a match lasts one working week.
 | `apps/gm-cli`       | Runs a match from JSON files for playtests: [how to run a week](apps/gm-cli/README.md)       |
 | `libs/contracts`    | Request and response shapes shared by the API and the web, error codes, request decoders     |
 | `apps/api`          | NestJS API: invite lobbies, orders until the deadline, spies, nightly resolution, SQLite     |
+| `apps/web`          | Angular, mobile first: lobby, SVG map and zone list, orders with matchup preview, replay     |
 
 Upgrades, commander passives and abilities, and events are all **modifiers**: plain data that patches the
 parameters the engine reads, or adds a named step to a resolution phase. The engine never asks "is this Napoleon?";
@@ -40,6 +41,7 @@ yarn lint         # ESLint, including complexity ≤ 2 and engine purity rules
 yarn typecheck
 yarn -s gm help   # the GM CLI for playtests
 npx nx serve api  # the API on http://localhost:3000
+npx nx serve web  # the web app on http://localhost:4200, with /api proxied to the API
 ```
 
 Single project: `npx nx test engine`, `npx nx lint content`, …
@@ -60,10 +62,28 @@ experimental-feature warning at start-up.
 | `DELETE /matches/:matchId/players/me` | player             | Leaves the lobby before the start                              |
 | `PUT /matches/:matchId/orders`        | player             | Replaces today's orders until 23:00; refused orders are listed |
 | `POST /matches/:matchId/spies`        | player             | Sends a spy until 23:00; returns the report                    |
+| `POST /matches/:matchId/preview`      | player             | What the player could know about a planned attack              |
 
 Players send `Authorization: Bearer <player token>`. Every error is `{ statusCode, code, message, problems }`: clients
 translate `code`; `problems` lists refused orders. Nights resolve at 02:00 in the match's time zone, and any night
 missed while the server was down resolves as soon as it is back.
+
+## The web app
+
+Angular 22, zoneless and standalone, signals for state (`httpResource` for reads, a small `createAction` for writes).
+Every screen works at phone width first.
+
+- **Errors:** one HTTP interceptor handles every API error. A 4xx from a form shows inline in that form; anything
+  else, network failures included, becomes a translated snackbar. Every error is reported to Sentry once (set
+  `sentryDsn` in `apps/web/src/environments/environment.prod.ts`; reporting is off without one).
+- **Words:** every string comes from the English catalogue in `apps/web/src/app/core/i18n/en.ts`, typed so a key
+  that does not exist fails the build. Other languages are another catalogue behind the `CATALOGUE` token.
+- **Accessibility:** the SVG map is one tab stop; arrow keys move between zones and Enter or Space selects one. The
+  zone list shows the same zones, owners and armies as a table. Tabs follow the WAI-ARIA tabs pattern.
+- **What a player sees** is the `PlayerView` from the API, never more: the client holds no rules of its own beyond
+  the order rules the view carries (costs, move limit, move ranges), and the API validates every order.
+- **Styling:** Tailwind utilities for layout and spacing only (its colour, type and shadow scales are removed), and
+  component SCSS classes for the look. An element gets one or the other, never both.
 
 ## Standards enforced by tooling
 
@@ -76,3 +96,5 @@ missed while the server was down resolves as soon as it is back.
 | 100% coverage                             | Jest `coverageThreshold` in `jest.preset.js`                                     |
 | Engine purity (no clock, randomness, I/O) | `libs/engine/eslint.config.mjs` restricted globals and properties, no Node types |
 | Deterministic ordering                    | `require-array-sort-compare`, `localeCompare` banned in the engine               |
+| Template type checking (web)              | `ngc` with `strictTemplates` in the web's `typecheck` target                     |
+| Template accessibility (web)              | `angular-eslint` template accessibility rules                                    |

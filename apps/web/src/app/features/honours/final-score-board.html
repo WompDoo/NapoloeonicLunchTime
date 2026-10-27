@@ -1,0 +1,55 @@
+<section class="final lc-panel" aria-labelledby="final-title">
+  <div class="grid gap-4 p-4">
+    <div class="grid gap-1">
+      <h2 id="final-title" class="final__title">{{ 'final.title' | t }}</h2>
+      <p class="final__verdict">
+        {{ verdictKey() | t: { players: winners() } }}
+      </p>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="scores">
+        <caption class="lc-visually-hidden">
+          {{
+            'final.title' | t
+          }}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ 'final.rank' | t }}</th>
+            <th scope="col">{{ 'final.player' | t }}</th>
+            <th scope="col" class="scores__number">{{ 'final.cities' | t }}</th>
+            <th scope="col" class="scores__number">
+              {{ 'final.honours' | t }}
+            </th>
+            <th scope="col" class="scores__number">{{ 'final.total' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (player of score().players; track player.playerId) {
+            <tr>
+              <td>{{ player.rank }}</td>
+              <th scope="row">{{ roster().nameOf(player.playerId) }}</th>
+              <td class="scores__number">{{ player.cityPoints }}</td>
+              <td class="scores__number">{{ player.honourPoints }}</td>
+              <td class="scores__number scores__total">{{ player.total }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <ul class="grid gap-1">
+      @for (award of score().honours; track award.honourId) {
+        <li class="final__award">
+          <strong>{{ honourName(award.honourId) | t }}</strong> ({{
+            'honours.points' | t: { count: award.points }
+          }}):
+          {{
+            award.winnerIds.length === 0
+              ? ('final.unawarded' | t)
+              : ('final.awarded' | t: { players: awardees(award) })
+          }}
+        </li>
+      }
+    </ul>
+  </div>
+</section>

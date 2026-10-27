@@ -1,0 +1,129 @@
+<div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+  <section class="lc-panel" aria-labelledby="orders-title">
+    <div class="grid gap-3 p-4">
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 id="orders-title" class="orders__title">
+          {{ 'orders.title' | t }}
+        </h2>
+        <span class="orders__meta">
+          {{
+            'orders.moveLimit'
+              | t
+                : {
+                    used: movesUsed(),
+                    max: match().view.orderRules.maxMoveOrders,
+                  }
+          }}
+          · {{ 'orders.supplyLeft' | t: { count: supplyLeft() } }}
+        </span>
+      </div>
+
+      @if (draft().length === 0) {
+        <lc-state-panel state="empty" message="orders.empty" />
+      } @else {
+        <ol class="grid gap-2">
+          @for (order of draft(); track $index) {
+            <li
+              class="order"
+              [class.order--refused]="problemKeys($index).length > 0"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div class="grid gap-1">
+                  <span>{{ $index + 1 }}. {{ describe(order) }}</span>
+                  @for (problem of problemKeys($index); track problem) {
+                    <span class="order__problem">{{ problem | t }}</span>
+                  }
+                </div>
+                @if (isOpen()) {
+                  <button
+                    type="button"
+                    class="lc-button lc-button--quiet"
+                    [attr.aria-label]="
+                      ('orders.remove' | t) + ': ' + describe(order)
+                    "
+                    (click)="removeOrder($index)"
+                  >
+                    {{ 'orders.remove' | t }}
+                  </button>
+                }
+              </div>
+            </li>
+          }
+        </ol>
+      }
+      @if (supplyLeft() < 0) {
+        <p class="lc-field-error" role="alert">{{ 'orders.overBudget' | t }}</p>
+      }
+      @if (ordersError(); as error) {
+        <p class="lc-field-error" role="alert">{{ errorKeyOf(error) | t }}</p>
+      }
+      @if (isOpen()) {
+        <div class="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            class="lc-button"
+            [disabled]="!unsaved() || save.status() === 'pending'"
+            (click)="submit()"
+          >
+            {{ 'orders.submit' | t }}
+          </button>
+          <span class="orders__meta" role="status">
+            @if (saveStatus(); as status) {
+              {{ status | t }}
+            }
+          </span>
+        </div>
+      } @else {
+        <p class="orders__meta">{{ 'orders.closed' | t }}</p>
+      }
+    </div>
+  </section>
+
+  @if (isOpen()) {
+    <section class="lc-panel" aria-labelledby="add-title">
+      <div class="grid gap-4 p-4">
+        <h2 id="add-title" class="orders__title">{{ 'orders.add' | t }}</h2>
+        <div class="grid gap-1">
+          <label class="lc-label" for="order-kind">{{
+            'orders.kind' | t
+          }}</label>
+          <select id="order-kind" class="lc-input" [(ngModel)]="kind">
+            @for (option of kinds; track option) {
+              <option [ngValue]="option">{{ kindLabels[option] | t }}</option>
+            }
+          </select>
+        </div>
+        @switch (kind()) {
+          @case ('move') {
+            <lc-move-form
+              [view]="match().view"
+              [matchId]="match().matchId"
+              [(fromZoneId)]="planFromZoneId"
+              (add)="addOrder($event)"
+            />
+          }
+          @case ('recruit') {
+            <lc-recruit-form [view]="match().view" (add)="addOrder($event)" />
+          }
+          @case ('support') {
+            <lc-support-form [view]="match().view" (add)="addOrder($event)" />
+          }
+          @case ('buyUpgrade') {
+            <lc-upgrade-form
+              [view]="match().view"
+              [draft]="draft()"
+              (add)="addOrder($event)"
+            />
+          }
+          @case ('useAbility') {
+            <lc-ability-form
+              [view]="match().view"
+              [draft]="draft()"
+              (add)="addOrder($event)"
+            />
+          }
+        }
+      </div>
+    </section>
+  }
+</div>

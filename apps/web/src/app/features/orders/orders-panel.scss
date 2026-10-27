@@ -1,0 +1,27 @@
+.orders__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+}
+
+.orders__meta {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.order {
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-sunk);
+}
+
+.order--refused {
+  border-color: var(--danger);
+}
+
+.order__problem {
+  color: var(--danger);
+  font-size: 0.875rem;
+  font-weight: 600;
+}

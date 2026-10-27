@@ -1,0 +1,27 @@
+@if (session() === null) {
+  <div class="grid gap-4 py-6">
+    <lc-state-panel state="empty" message="match.notOnDevice" />
+    <a class="lc-button lc-button--quiet" routerLink="/">{{
+      'match.backHome' | t
+    }}</a>
+  </div>
+} @else if (match.hasValue()) {
+  @let dto = match.value();
+  @if (dto.phase === 'lobby') {
+    <lc-lobby-panel [lobby]="dto" (changed)="show($event)" />
+  } @else {
+    <lc-playing-view
+      [match]="dto"
+      (changed)="show($event)"
+      (refreshNeeded)="refresh()"
+    />
+  }
+} @else if (match.error()) {
+  <div class="py-6">
+    <lc-state-panel state="error" (retry)="refresh()" />
+  </div>
+} @else {
+  <div class="py-6">
+    <lc-state-panel state="loading" />
+  </div>
+}

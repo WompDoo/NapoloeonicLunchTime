@@ -1,0 +1,55 @@
+<section class="lc-panel" aria-labelledby="honours-title">
+  <div class="grid gap-3 p-4">
+    <h2 id="honours-title" class="board__title">{{ 'honours.title' | t }}</h2>
+    @if (honours().length === 0) {
+      <lc-state-panel state="empty" message="honours.empty" />
+    } @else {
+      <ul class="grid gap-3">
+        @for (honour of honours(); track honour.honourId) {
+          <li class="honour">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <h3 class="honour__name">
+                {{ honourName(honour.honourId) | t }}
+              </h3>
+              <span class="honour__points">{{
+                'honours.points' | t: { count: honour.points }
+              }}</span>
+            </div>
+            <p class="honour__text">
+              {{ honourDescription(honour.honourId) | t }}
+            </p>
+            <p class="honour__leaders">
+              {{
+                honour.leaderIds.length === 0
+                  ? ('honours.nobody' | t)
+                  : ('honours.leading' | t: { players: leaders(honour) })
+              }}
+            </p>
+            <table class="standings">
+              <caption class="lc-visually-hidden">
+                {{
+                  honourName(honour.honourId) | t
+                }}
+              </caption>
+              <tbody>
+                @for (entry of honour.entries; track entry.playerId) {
+                  <tr>
+                    <th scope="row">{{ roster().nameOf(entry.playerId) }}</th>
+                    <td class="standings__value">
+                      {{ entry.value }}
+                      @if (!entry.eligible) {
+                        <span class="standings__note"
+                          >({{ 'honours.notEligible' | t }})</span
+                        >
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</section>

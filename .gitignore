@@ -48,3 +48,5 @@ Thumbs.db
 *.sqlite
 *.sqlite-journal
 *.sqlite-wal
+
+.angular

@@ -1,0 +1,81 @@
+@if (startZones().length === 0) {
+  <lc-state-panel state="empty" message="orders.noMovable" />
+} @else {
+  <form class="grid gap-4" (ngSubmit)="submit()">
+    <div class="grid gap-3 sm:grid-cols-3">
+      <div class="grid gap-1">
+        <label class="lc-label" for="move-from">{{ 'orders.from' | t }}</label>
+        <select
+          id="move-from"
+          name="from"
+          class="lc-input"
+          [(ngModel)]="fromZoneId"
+        >
+          <option [ngValue]="null">{{ 'orders.choose' | t }}</option>
+          @for (zone of startZones(); track zone.zoneId) {
+            <option [ngValue]="zone.zoneId">{{ zone.zoneId }}</option>
+          }
+        </select>
+      </div>
+      @if (canPassThrough()) {
+        <div class="grid gap-1">
+          <label class="lc-label" for="move-via">{{ 'orders.via' | t }}</label>
+          <select
+            id="move-via"
+            name="via"
+            class="lc-input"
+            [(ngModel)]="viaZoneId"
+            [disabled]="fromZoneId() === null"
+          >
+            <option [ngValue]="null">{{ 'orders.direct' | t }}</option>
+            @for (zoneId of throughZones(); track zoneId) {
+              <option [ngValue]="zoneId">{{ zoneId }}</option>
+            }
+          </select>
+        </div>
+      }
+      <div class="grid gap-1">
+        <label class="lc-label" for="move-to">{{ 'orders.to' | t }}</label>
+        <select
+          id="move-to"
+          name="to"
+          class="lc-input"
+          [(ngModel)]="toZoneId"
+          [disabled]="fromZoneId() === null"
+        >
+          <option [ngValue]="null">{{ 'orders.choose' | t }}</option>
+          @for (zoneId of destinations(); track zoneId) {
+            <option [ngValue]="zoneId">{{ zoneId }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    @if (fromZoneId() !== null) {
+      <lc-unit-picker
+        idPrefix="move-"
+        [available]="available()"
+        [(units)]="units"
+      />
+    }
+    @if (plan() !== null) {
+      @if (preview.hasValue()) {
+        <lc-matchup-preview-card [preview]="preview.value()" />
+      } @else if (preview.error()) {
+        @if (previewError(); as error) {
+          <p class="lc-field-error" role="alert">{{ errorKeyOf(error) | t }}</p>
+        } @else {
+          <lc-state-panel state="error" (retry)="preview.reload()" />
+        }
+      } @else {
+        <lc-state-panel state="loading" message="preview.loading" />
+      }
+    }
+
+    <div>
+      <button type="submit" class="lc-button" [disabled]="order() === null">
+        {{ 'orders.addToList' | t }}
+      </button>
+    </div>
+  </form>
+}

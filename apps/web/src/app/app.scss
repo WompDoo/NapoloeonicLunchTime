@@ -1,0 +1,44 @@
+:host {
+  display: block;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+
+.skip-link:focus {
+  left: 16px;
+  top: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  z-index: 30;
+}
+
+.masthead {
+  border-bottom: 2px solid var(--ink);
+}
+
+.masthead__name {
+  font: 700 1.5rem/1 var(--font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.masthead__tagline {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-align: right;
+}
+
+main:focus {
+  outline: none;
+}

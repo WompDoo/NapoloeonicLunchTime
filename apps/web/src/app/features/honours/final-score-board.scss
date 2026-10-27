@@ -1,0 +1,45 @@
+.final {
+  border-color: var(--accent);
+}
+
+.final__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+}
+
+.final__verdict {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.scores {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.scores th,
+.scores td {
+  padding: 0.5rem 0.625rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.scores thead th {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.scores .scores__number {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.scores__total {
+  font-weight: 700;
+}
+
+.final__award {
+  font-size: 0.9375rem;
+}
