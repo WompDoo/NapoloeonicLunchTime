@@ -473,6 +473,14 @@ v0 is the one-week Points mode on one 4-player map; everything else waits until 
 | 2026-10-26 | Spying on your own zone | Rejected |
 | 2026-10-26 | Moore's unidentified skirmishers | Counted but untyped in the report |
 | 2026-10-26 | Replay for players outside a battle | Each side's unit count before and after, and the outcome |
+| 2026-10-27 | Playtest gate | Skipped by the project owner: M5 is built before the playtest week |
+| 2026-10-27 | Honour standings in views | Every player's value is shown, as the visibility table says |
+| 2026-10-27 | Seats | Drawn at random from the match seed when the match starts |
+| 2026-10-27 | Players on the v0 map | 2 to 4; capitals of unused seats start neutral and empty |
+| 2026-10-27 | Match start | When every player in the lobby has picked a commander and pressed ready |
+| 2026-10-27 | Day 1 | The start day if it is a weekday and before the deadline, otherwise the next weekday |
+| 2026-10-27 | Match days | Five weekdays counted from day 1, skipping weekends; the schedule labels name game days, not calendar days |
+| 2026-10-27 | Spying after the deadline | Closed: spies close with orders at the deadline and reopen after the night's resolution |
 
 **Open questions for the playtest:**
 

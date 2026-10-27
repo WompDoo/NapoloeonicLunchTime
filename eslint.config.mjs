@@ -44,6 +44,10 @@ export default [
               onlyDependOnLibsWithTags: ['type:player-view'],
             },
             {
+              sourceTag: 'type:contracts',
+              onlyDependOnLibsWithTags: ['type:engine', 'type:player-view'],
+            },
+            {
               sourceTag: 'type:app',
               onlyDependOnLibsWithTags: [
                 'type:engine',
@@ -51,6 +55,7 @@ export default [
                 'type:honours',
                 'type:player-view',
                 'type:renderer',
+                'type:contracts',
               ],
             },
           ],
