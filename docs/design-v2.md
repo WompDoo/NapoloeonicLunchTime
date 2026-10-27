@@ -35,7 +35,8 @@ Every rule carries a tag:
 - **Agreed:** capitals are one ring in from the map's edge, so everyone has some ground behind them.
 - **Agreed:** terrain can make routes unequal. That is expected.
 - **Default:** neighbouring capitals are 6 hexes apart, so armies marching straight at each other meet on night 2.
-- **Proposal:** the map is generated from the match seed: the same seed always gives the same map. Constraints:
+- **Agreed:** a new map is generated for every match from its seed; the same seed always gives the same map.
+- **Proposal:** constraints on the generator:
   - every hex can be reached;
   - no impassable terrain next to a capital;
   - towns keep a minimum distance from each other and from capitals.
@@ -240,8 +241,8 @@ more to build. I would hold it for later.
   - **Proposal:** keep the v1 honours that still make sense and add new ones, for example most pacts kept, or a
     betrayal that paid off.
 - **Agreed:** minus pact penalties.
-- **Proposal:** a player who loses their capital loses their city actions and research until they retake it.
-  They are not out of the match while they still have armies.
+- **Agreed:** a player who loses their capital loses their city actions and research until they retake it. They
+  are out of the match only once they have neither a capital nor an army.
 
 ## 13. The gazette
 
@@ -252,17 +253,18 @@ more to build. I would hold it for later.
 
 ## 14. What you can see
 
+- **Agreed:** no fog of war. Everyone sees the whole map: terrain, towns, territory, and where every army is.
 - **Agreed:** other players' armies show their size, not what they are made of. A spy report or a battle shows
   what they are made of.
 - **Proposal:** a decoy shows a made-up size until it is spied on or fought.
-- **Proposal:** fog of war. You see hexes within 2 of your territory and your armies, and cavalry see one hex
-  further. Beyond that you see what you last saw. Terrain is always visible.
+- **Proposal:** the Fog event (see 17) hides other armies' sizes for one day: one blind day in a game where you
+  otherwise see everything.
 
 ## 15. The UI
 
 - **Agreed:** the map looks like a map: terrain, rivers, lakes and the lines of control.
 - **Agreed:** an army appears as one soldier figure per unit type, each with its number. Someone else's army is one
-  neutral figure with its total; under fog, the figure shows a "?".
+  neutral figure with its total; on a Fog day, the figure shows a "?".
 - **Proposal:** the map is how you give orders.
   - Tap an army and the hexes it can reach light up; tap one to draw the path, and see the matchup preview
     inline.
@@ -271,7 +273,41 @@ more to build. I would hold it for later.
   - The replay animates on the map.
   - The map pans and zooms.
 
-## 16. What carries over from v1
+## 16. Commanders
+
+- **Proposal:** keep them. You pick one in the lobby, picks stay secret until the match starts, and two players
+  may pick the same one. Each has a passive and an ability used once a match. They play the part of Civ's
+  leaders: each leans on a different part of the game, not only on combat.
+- **Proposal:** two new commanders, so eight players can all pick a different one.
+
+| Commander        | Leans on    | Passive                                   | Once a match                                                                            |
+| ---------------- | ----------- | ----------------------------------------- | --------------------------------------------------------------------------------------- |
+| Napoleon         | artillery   | artillery 25% stronger                    | **Grand Battery:** tonight your artillery counts double                                 |
+| Wellington       | defence     | defender bonus +10%                       | **Reverse Slope:** one army takes no artillery damage and its defender bonus doubles    |
+| Murat            | cavalry     | cavalry speed +2 march points             | **Grand Charge:** tonight no defender bonus where your cavalry attacks                  |
+| Blücher          | attack      | attacking armies 10% stronger             | **Marschall Vorwärts:** +12 march points tonight                                        |
+| Kutuzov          | attrition   | Orderly Retreat always                    | **Scorched Earth:** towns taken from you tonight give their captor nothing for 2 nights |
+| Sir John Moore   | skirmishers | skirmishers show as unidentified to spies | **Ambush:** tonight your skirmishers in forest deal double damage                       |
+| Talleyrand (new) | diplomacy   | breaking a pact costs half                | **Turncoat:** break one pact with no penalty; only the betrayed player is told          |
+| Fouché (new)     | intrigue    | spies cost half                           | **Secret Police:** tonight you see what every army is made of                           |
+
+- **Default:** every number in the table.
+
+## 17. Events
+
+- **Proposal:** keep them. One event per match, drawn from the seed, announced in Tuesday's gazette and in play
+  on Wednesday, as in v1. Announcing it a day ahead makes it something to plan for, not luck, and it gives the
+  gazette a headline.
+
+| Event          | Wednesday (proposal)                                      |
+| -------------- | --------------------------------------------------------- |
+| Mud            | every hex costs 1 more march point; artillery cannot move |
+| Fog            | other armies' sizes are hidden; no spies                  |
+| Typhus         | each player's largest army loses a fifth of its units     |
+| Levée en masse | free line infantry join every capital                     |
+| Armistice      | no battles tonight: armies that meet an enemy halt        |
+
+## 18. What carries over from v1
 
 **Stays:**
 
@@ -286,15 +322,25 @@ more to build. I would hold it for later.
 **Rewritten:** the map (hexes, terrain, territory), orders (paths and city actions instead of an order list), how a
 night resolves (stepped movement, battle results), the economy, research, pacts, the gazette and the map-first UI.
 
-## 17. Open questions
+## 19. Milestones
+
+**Proposal.** Each milestone ends with something you can play in the browser, so we can see whether it is fun
+before we build the next one. Every milestone keeps v1's standards: 100% coverage, determinism tests, the leak tests.
+
+| Milestone | Builds                                                                                                                                                                  | You can                             |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| M7        | the seeded hex map generator for 2 to 8 players; drawing the map: terrain, rivers, towns, borders, pan and zoom                                                         | create a match and look at its map  |
+| M8        | armies: paths, the movement pool, stepped movement, battle results, retreats, captures, town scoring; ordering on the map; unit figures; the replay animated on the map | play a week of pure war             |
+| M9        | the city: resources, buildings, musters, reinforcing through connected territory                                                                                        | build an economy that feeds the war |
+| M10       | tech, the university, spies, decoys, sabotage, the gazette and rumours                                                                                                  | out-think the others                |
+| M11       | pacts, cooldowns, the betrayal penalty, trades                                                                                                                          | make deals and break them           |
+| M12       | commanders, events, v2 honours, a balancing pass                                                                                                                        | play the full game                  |
+
+## 20. Open questions
 
 1. **Hexes** (3): agreed?
-2. **Generated maps** (3): a new map from each match's seed, or a few hand-made ones?
-3. **Battle results** (7): are the three results and their thresholds the right shape?
-4. **Reinforcements** (11): connected territory, generals, or both?
-5. **Losing your capital** (12): no city actions until it is retaken, but not out of the match?
-6. **Fog of war** (14): in, or does everyone see the whole map?
-7. **Events:** keep v1's match event (Mud, Fog, Typhus, Levée en masse, Armistice) or drop it?
-8. **Resources** (4): three kinds, or a single gold currency?
-9. **Commanders:** keep picking one in the lobby, with a passive and a once-a-match ability? They need rewriting
-   for hexes either way.
+2. **Battle results** (7): are the three results and their thresholds the right shape?
+3. **Reinforcements** (11): connected territory now, generals later?
+4. **Resources** (4): three kinds, or a single gold currency?
+5. **Commanders and events** (16, 17): keep them in the shape above?
+6. **Milestones** (19): is this the right order?
