@@ -28,7 +28,7 @@ Every rule carries a tag:
 
 ## 3. The map
 
-- **Proposal:** a hex grid. Straight-line distance and moves agree closely on hexes, and Civ uses them.
+- **Agreed:** a hex grid. Straight-line distance and moves agree closely on hexes.
 - **Agreed:** with three or more players, every player is the same straight-line distance from at least two
   others. Capitals sit on a circle around the centre at equal angles. With two players, they face each other
   across the centre.
@@ -68,13 +68,15 @@ Every rule carries a tag:
 
 ## 4. Resources
 
-- **Proposal:** three resources.
-  - **Gold** pays for buildings, infantry, intrigue.
-  - **Horses** pay for cavalry.
-  - **Iron** pays for artillery.
-- **Default:** capital income per night: 6 gold, 1 horse, 1 iron. Each town gives a preset bundle, for example
-  4 gold, or 1 gold and 2 horses, or 1 gold and 2 iron.
-- **Default:** starting stock: 10 gold, 2 horses, 2 iron.
+- **Proposal (recommended):** one currency, gold. It pays for buildings, hiring and intrigue.
+  - Why not horses and iron as well: a player with no horse town nearby could not field cavalry, and the counter
+    triangle would break for them. One number to count also keeps the day short.
+- **Proposal:** every town is a kind. Holding it gives gold and a discount, never units:
+  - **market town:** more gold;
+  - **stud farm:** cavalry costs 1 gold less to hire;
+  - **ironworks:** artillery costs 1 gold less to hire.
+- **Default:** income per night: capital 8 gold, market town 4 gold, stud farm and ironworks 2 gold each.
+- **Default:** starting stock: 12 gold.
 
 ## 5. The day
 
@@ -145,7 +147,7 @@ Free. See 8.
   - **Default:** terrain modifiers as in the terrain table.
   - **Default:** defender bonus 25%. Hills and walls add more.
 - **Agreed:** the result depends on the strength and make-up of the armies; the loser does not always retreat.
-- **Proposal:** the result depends on R, the stronger side's strength divided by the weaker side's:
+- **Agreed:** the result depends on R, the stronger side's strength divided by the weaker side's:
 
 | Result         | Default threshold | Losses                                          | Afterwards                                       |
 | -------------- | ----------------- | ----------------------------------------------- | ------------------------------------------------ |
@@ -175,7 +177,7 @@ Free. See 8.
 - **Agreed:** a pact can be broken. The break takes effect that same night, everyone is told at dawn, and the
   breaker loses points.
   - **Default:** breaking a pact costs 5 points.
-- **Proposal:** trades are a one-off swap of resources, accepted or declined during the day.
+- **Proposal:** a player can send gold to another during the day, for example as the price of a pact.
 
 ## 9. The city
 
@@ -184,20 +186,19 @@ Free. See 8.
   - **Default:** each unit building adds a nightly growth to the hiring pool: barracks 3 line, stables 2 cavalry,
     skirmisher camp 2 skirmishers, foundry 1 gun. Units nobody hires stay in the pool.
 
-| Building        | Does                                      | Default cost   |
-| --------------- | ----------------------------------------- | -------------- |
-| Barracks        | line infantry growth (built at the start) | already built  |
-| Stables         | cavalry growth                            | 6 gold         |
-| Skirmisher camp | skirmisher growth                         | 6 gold         |
-| Foundry         | artillery growth                          | 6 gold, 2 iron |
-| Market          | +3 gold a night                           | 5 gold         |
-| Walls           | defender bonus in the capital up          | 8 gold         |
-| University      | one more tech a night                     | 10 gold        |
-| Spy network     | intrigue costs less                       | 6 gold         |
+| Building        | Does                                      | Default cost  |
+| --------------- | ----------------------------------------- | ------------- |
+| Barracks        | line infantry growth (built at the start) | already built |
+| Stables         | cavalry growth                            | 6 gold        |
+| Skirmisher camp | skirmisher growth                         | 6 gold        |
+| Foundry         | artillery growth                          | 8 gold        |
+| Market          | +3 gold a night                           | 5 gold        |
+| Walls           | defender bonus in the capital up          | 8 gold        |
+| University      | one more tech a night                     | 10 gold       |
+| Spy network     | intrigue costs less                       | 6 gold        |
 
 - **Proposal:** techs unlock more buildings (see 10). Each building can be built once.
-- **Default:** what a unit costs to hire: line 2 gold; skirmisher 2 gold; cavalry 2 gold and 1 horse;
-  artillery 3 gold and 1 iron.
+- **Default:** what a unit costs to hire: line 2 gold, skirmisher 2 gold, cavalry 3 gold, artillery 4 gold.
 
 ## 10. Tech
 
@@ -220,16 +221,14 @@ Free. See 8.
 
 ## 11. Reinforcing the front
 
-This was the open question. **Proposal:** mustered units join any of your armies standing in territory
+**Agreed:** mustered units join any of your armies standing in territory
 connected to your capital by an unbroken run of your own hexes. Without a connected army, they appear in the
 capital.
 
 This gives the lines of control a rule. Cut through someone's territory and you cut off their reinforcements.
 Hiring on Thursday still matters.
 
-The other option is generals. Your commander would be on the map leading one army, recruits could always reach
-that army, and its passive and ability would work only there. It adds flavour and a high-value target, but it is
-more to build. I would hold it for later.
+Generals (your commander on the map, leading one army) are set aside for after the milestones below.
 
 ## 12. Scoring
 
@@ -275,7 +274,7 @@ more to build. I would hold it for later.
 
 ## 16. Commanders
 
-- **Proposal:** keep them. You pick one in the lobby, picks stay secret until the match starts, and two players
+- **Agreed:** keep them. You pick one in the lobby, picks stay secret until the match starts, and two players
   may pick the same one. Each has a passive and an ability used once a match. They play the part of Civ's
   leaders: each leans on a different part of the game, not only on combat.
 - **Proposal:** two new commanders, so eight players can all pick a different one.
@@ -295,7 +294,7 @@ more to build. I would hold it for later.
 
 ## 17. Events
 
-- **Proposal:** keep them. One event per match, drawn from the seed, announced in Tuesday's gazette and in play
+- **Agreed:** keep them. One event per match, drawn from the seed, announced in Tuesday's gazette and in play
   on Wednesday, as in v1. Announcing it a day ahead makes it something to plan for, not luck, and it gives the
   gazette a headline.
 
@@ -324,7 +323,7 @@ night resolves (stepped movement, battle results), the economy, research, pacts,
 
 ## 19. Milestones
 
-**Proposal.** Each milestone ends with something you can play in the browser, so we can see whether it is fun
+**Agreed.** Each milestone ends with something you can play in the browser, so we can see whether it is fun
 before we build the next one. Every milestone keeps v1's standards: 100% coverage, determinism tests, the leak tests.
 
 | Milestone | Builds                                                                                                                                                                  | You can                             |
@@ -338,9 +337,6 @@ before we build the next one. Every milestone keeps v1's standards: 100% coverag
 
 ## 20. Open questions
 
-1. **Hexes** (3): agreed?
-2. **Battle results** (7): are the three results and their thresholds the right shape?
-3. **Reinforcements** (11): connected territory now, generals later?
-4. **Resources** (4): three kinds, or a single gold currency?
-5. **Commanders and events** (16, 17): keep them in the shape above?
-6. **Milestones** (19): is this the right order?
+1. **Resources** (4): one currency, gold, with town kinds that give discounts?
+2. **The remaining proposals:** everything still tagged Proposal. Accept as written, or strike what you disagree
+   with. Defaults are numbers we tune in play.
