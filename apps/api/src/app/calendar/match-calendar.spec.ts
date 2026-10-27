@@ -1,4 +1,7 @@
-import { DEFAULT_MATCH_CONFIG, DEFAULT_MATCH_TIMING } from '@lunch-campaign/content';
+import {
+  DEFAULT_MATCH_CONFIG,
+  DEFAULT_MATCH_TIMING,
+} from '@lunch-campaign/content';
 import { isKnownTimeZone, planMatchCalendar } from './match-calendar';
 
 const TALLINN = 'Europe/Tallinn';
@@ -57,22 +60,46 @@ describe('planMatchCalendar', () => {
     {
       name: 'starts on a Wednesday and skips the weekend',
       startedAt: '2026-11-04T08:00:00Z',
-      dates: ['2026-11-04', '2026-11-05', '2026-11-06', '2026-11-09', '2026-11-10'],
+      dates: [
+        '2026-11-04',
+        '2026-11-05',
+        '2026-11-06',
+        '2026-11-09',
+        '2026-11-10',
+      ],
     },
     {
       name: 'starts the next day when everyone is ready after the deadline',
       startedAt: '2026-11-04T21:30:00Z',
-      dates: ['2026-11-05', '2026-11-06', '2026-11-09', '2026-11-10', '2026-11-11'],
+      dates: [
+        '2026-11-05',
+        '2026-11-06',
+        '2026-11-09',
+        '2026-11-10',
+        '2026-11-11',
+      ],
     },
     {
       name: 'starts the next day when everyone is ready exactly at the deadline',
       startedAt: '2026-11-02T21:00:00Z',
-      dates: ['2026-11-03', '2026-11-04', '2026-11-05', '2026-11-06', '2026-11-09'],
+      dates: [
+        '2026-11-03',
+        '2026-11-04',
+        '2026-11-05',
+        '2026-11-06',
+        '2026-11-09',
+      ],
     },
     {
       name: 'starts on Monday when everyone is ready at the weekend',
       startedAt: '2026-11-07T10:00:00Z',
-      dates: ['2026-11-09', '2026-11-10', '2026-11-11', '2026-11-12', '2026-11-13'],
+      dates: [
+        '2026-11-09',
+        '2026-11-10',
+        '2026-11-11',
+        '2026-11-12',
+        '2026-11-13',
+      ],
     },
   ])('$name', ({ startedAt, dates }) => {
     expect(plan(startedAt).map((day) => day.date)).toEqual(dates);
@@ -80,7 +107,9 @@ describe('planMatchCalendar', () => {
 
   it('keeps 23:00 and 02:00 local across the change from summer time', () => {
     const days = plan('2026-10-22T09:00:00Z');
-    expect(days.map((day) => [day.date, day.deadlineAt, day.resolvesAt])).toEqual([
+    expect(
+      days.map((day) => [day.date, day.deadlineAt, day.resolvesAt]),
+    ).toEqual([
       ['2026-10-22', '2026-10-22T20:00:00.000Z', '2026-10-22T23:00:00.000Z'],
       ['2026-10-23', '2026-10-23T20:00:00.000Z', '2026-10-23T23:00:00.000Z'],
       ['2026-10-26', '2026-10-26T21:00:00.000Z', '2026-10-27T00:00:00.000Z'],

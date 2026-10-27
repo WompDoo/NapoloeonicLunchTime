@@ -16,13 +16,16 @@ the day and resolve simultaneously overnight; a match lasts one working week.
 | `libs/player-view`  | `filterForPlayer`, spies and the replay as each player may see it: the only path to players  |
 | `libs/render-ascii` | Plain-text rendering of a `PlayerView`: map, players, honours, spy reports, last night       |
 | `apps/gm-cli`       | Runs a match from JSON files for playtests: [how to run a week](apps/gm-cli/README.md)       |
+| `libs/contracts`    | Request and response shapes shared by the API and the web, error codes, request decoders     |
+| `apps/api`          | NestJS API: invite lobbies, orders until the deadline, spies, nightly resolution, SQLite     |
 
 Upgrades, commander passives and abilities, and events are all **modifiers**: plain data that patches the
 parameters the engine reads, or adds a named step to a resolution phase. The engine never asks "is this Napoleon?";
 it asks for a player's effective parameters tonight. A new event needs data and, at most, one new phase-step action.
 
-Dependencies point one way: `gm-cli → render-ascii → player-view → honours → content → engine` (each may also read
-the layers below directly, except renderers, which see `player-view` only, so they can never reach hidden state). The
+Dependencies point one way: `apps → render-ascii / contracts → player-view → honours → content → engine` (each may
+also read the layers below directly, except renderers, which see `player-view` only, so they can never reach hidden
+state). The
 engine never imports content (enforced by `@nx/enforce-module-boundaries`), and engine tests use their own fixtures so
 playtest tuning never breaks them. Fixtures shared across projects live in `src/testing` behind a
 `@lunch-campaign/<project>/testing` entry point that only specs and other fixtures may import.
@@ -36,9 +39,31 @@ yarn test         # Jest; fails below 100% coverage
 yarn lint         # ESLint, including complexity ≤ 2 and engine purity rules
 yarn typecheck
 yarn -s gm help   # the GM CLI for playtests
+npx nx serve api  # the API on http://localhost:3000
 ```
 
 Single project: `npx nx test engine`, `npx nx lint content`, …
+
+## The API
+
+`PORT` (default 3000), `DATABASE_PATH` (default `lunch-campaign.sqlite`; `:memory:` for a throwaway database) and
+`WEB_ORIGIN` (the web client's origin, for CORS). Node 22's built-in SQLite holds the matches; it still prints an
+experimental-feature warning at start-up.
+
+| Call                                  | Who                | Does                                                           |
+| ------------------------------------- | ------------------ | -------------------------------------------------------------- |
+| `POST /matches`                       | anyone             | Opens a lobby in a time zone; returns the invite code          |
+| `POST /invites/:inviteCode/players`   | anyone with invite | Joins; returns the player token, shown once                    |
+| `GET /matches/:matchId`               | player             | The lobby, or the player's view of the running match           |
+| `PUT /matches/:matchId/commander`     | player             | Secret commander pick, changeable until the start              |
+| `PUT /matches/:matchId/ready`         | player             | Ready or not; the last player ready starts the match           |
+| `DELETE /matches/:matchId/players/me` | player             | Leaves the lobby before the start                              |
+| `PUT /matches/:matchId/orders`        | player             | Replaces today's orders until 23:00; refused orders are listed |
+| `POST /matches/:matchId/spies`        | player             | Sends a spy until 23:00; returns the report                    |
+
+Players send `Authorization: Bearer <player token>`. Every error is `{ statusCode, code, message, problems }`: clients
+translate `code`; `problems` lists refused orders. Nights resolve at 02:00 in the match's time zone, and any night
+missed while the server was down resolves as soon as it is back.
 
 ## Standards enforced by tooling
 

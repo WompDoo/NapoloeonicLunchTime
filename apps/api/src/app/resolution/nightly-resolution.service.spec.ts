@@ -54,8 +54,23 @@ describe('NightlyResolutionService', () => {
     expect(clock.tickCount).toBe(0);
   });
 
+  it('shuts down quietly when it never started', () => {
+    const clock = new FakeClock(TUESDAY_RESOLUTION);
+    const service = new NightlyResolutionService(
+      storeWith([]),
+      clock,
+      clock,
+      SETTINGS,
+    );
+    expect(() => {
+      service.onApplicationShutdown();
+    }).not.toThrow();
+  });
+
   it('logs a match it cannot resolve and still resolves the others', () => {
-    const log = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+    const log = jest
+      .spyOn(Logger.prototype, 'error')
+      .mockImplementation(() => undefined);
     const broken: StoredMatch = {
       ...match,
       matchId: 'broken',
@@ -67,8 +82,16 @@ describe('NightlyResolutionService', () => {
     };
     const store = storeWith([broken, match]);
     const clock = new FakeClock(TUESDAY_RESOLUTION);
-    new NightlyResolutionService(store, clock, clock, SETTINGS).resolveDueMatches();
+    new NightlyResolutionService(
+      store,
+      clock,
+      clock,
+      SETTINGS,
+    ).resolveDueMatches();
     expect(turnOf(store, 'match-1')).toBe(2);
-    expect(log).toHaveBeenCalledWith('Resolving match broken failed', expect.any(Error));
+    expect(log).toHaveBeenCalledWith(
+      'Resolving match broken failed',
+      expect.any(Error),
+    );
   });
 });

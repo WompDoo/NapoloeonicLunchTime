@@ -27,13 +27,9 @@ export function planMatchCalendar(
   const started = DateTime.fromJSDate(startedAt, { zone: timeZone });
   const days = schedule
     .slice(1)
-    .reduce<readonly DateTime[]>(
-      (planned): readonly DateTime[] => [
-        ...planned,
-        nextMatchDay(lastDay(planned), timing),
-      ],
-      [firstMatchDay(started, timing)],
-    );
+    .reduce<
+      readonly DateTime[]
+    >((planned): readonly DateTime[] => [...planned, nextMatchDay(lastDay(planned), timing)], [firstMatchDay(started, timing)]);
   return schedule.map(
     (entry, index): TurnWindow =>
       turnWindow(
@@ -104,8 +100,6 @@ function turnWindow(
     dayLabel: entry.label,
     date: day.toISODate(),
     deadlineAt: deadline.toUTC().toISO(),
-    resolvesAt: firstTimeAfter(deadline, timing.resolutionTime)
-      .toUTC()
-      .toISO(),
+    resolvesAt: firstTimeAfter(deadline, timing.resolutionTime).toUTC().toISO(),
   };
 }

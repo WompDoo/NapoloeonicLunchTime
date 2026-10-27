@@ -29,11 +29,18 @@ export class ApiClient {
   ): Promise<ApiResponse> {
     const response = await fetch(`${this.baseUrl}${path}`, {
       method,
-      headers: { 'content-type': 'application/json', ...authorization(request.token) },
-      body: request.rawBody ?? bodyOf(request.body),
+      headers: {
+        'content-type': 'application/json',
+        ...authorization(request.token),
+      },
+      body: bodyFor(request),
     });
     const text = await response.text();
-    this.exchanges.push({ token: request.token, status: response.status, text });
+    this.exchanges.push({
+      token: request.token,
+      status: response.status,
+      text,
+    });
     return { status: response.status, body: parsed(text) };
   }
 }
@@ -42,7 +49,11 @@ function authorization(token: string | undefined): Record<string, string> {
   return token === undefined ? {} : { authorization: `Bearer ${token}` };
 }
 
-function bodyOf(body: unknown): string | undefined {
+function bodyFor(request: ApiRequest): string | undefined {
+  return request.rawBody ?? jsonOf(request.body);
+}
+
+function jsonOf(body: unknown): string | undefined {
   return body === undefined ? undefined : JSON.stringify(body);
 }
 

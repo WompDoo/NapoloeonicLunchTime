@@ -43,9 +43,27 @@ function refusal(action: () => unknown): DomainError {
 describe('match play', () => {
   describe('orders', () => {
     it('keeps the last submission of each player', () => {
-      const first = submitOrders(MATCH, playerAt(0), [RECRUIT_LINE], MONDAY_MORNING, SETTINGS);
-      const second = submitOrders(first, playerAt(0), [], MONDAY_MORNING, SETTINGS);
-      const both = submitOrders(second, playerAt(1), [RECRUIT_LINE], MONDAY_MORNING, SETTINGS);
+      const first = submitOrders(
+        MATCH,
+        playerAt(0),
+        [RECRUIT_LINE],
+        MONDAY_MORNING,
+        SETTINGS,
+      );
+      const second = submitOrders(
+        first,
+        playerAt(0),
+        [],
+        MONDAY_MORNING,
+        SETTINGS,
+      );
+      const both = submitOrders(
+        second,
+        playerAt(1),
+        [RECRUIT_LINE],
+        MONDAY_MORNING,
+        SETTINGS,
+      );
       expect(ordersOf(playOf(first), playerAt(0))).toEqual([RECRUIT_LINE]);
       expect(ordersOf(playOf(both), playerAt(0))).toEqual([]);
       expect(ordersOf(playOf(both), playerAt(1))).toEqual([RECRUIT_LINE]);
@@ -71,7 +89,9 @@ describe('match play', () => {
         ),
       );
       expect(error.code).toBe('orders.invalid');
-      expect(error.problems).toEqual([{ orderIndex: 1, reason: 'unknownZone' }]);
+      expect(error.problems).toEqual([
+        { orderIndex: 1, reason: 'unknownZone' },
+      ]);
     });
 
     it.each([
@@ -81,7 +101,12 @@ describe('match play', () => {
         now: MONDAY_MORNING,
         code: 'match.notStarted',
       },
-      { name: 'after the deadline', match: MATCH, now: MONDAY_LATE, code: 'day.closed' },
+      {
+        name: 'after the deadline',
+        match: MATCH,
+        now: MONDAY_LATE,
+        code: 'day.closed',
+      },
       {
         name: 'once the match is over',
         match: resolveDueNights(MATCH, SATURDAY, CONFIG),
@@ -89,15 +114,26 @@ describe('match play', () => {
         code: 'match.finished',
       },
     ])('refuses orders $name', ({ match, now, code }) => {
-      expect(refusal(() => submitOrders(match, playerAt(0), [], now, SETTINGS)).code).toBe(code);
+      expect(
+        refusal(() => submitOrders(match, playerAt(0), [], now, SETTINGS)).code,
+      ).toBe(code);
     });
   });
 
   describe('spies', () => {
     it('charges the spy and logs the report', () => {
       const target = toZoneId(capitalOf(MATCH, playerAt(1)));
-      const outcome = sendSpy(MATCH, playerAt(0), target, MONDAY_MORNING, SETTINGS);
-      expect(outcome.report).toMatchObject({ playerId: playerAt(0), zoneId: target });
+      const outcome = sendSpy(
+        MATCH,
+        playerAt(0),
+        target,
+        MONDAY_MORNING,
+        SETTINGS,
+      );
+      expect(outcome.report).toMatchObject({
+        playerId: playerAt(0),
+        zoneId: target,
+      });
       expect(playOf(outcome.match).spyLog).toEqual([outcome.report]);
       expect(findPlayer(playOf(outcome.match).state, playerAt(0)).supply).toBe(
         findPlayer(playOf(MATCH).state, playerAt(0)).supply -
@@ -120,7 +156,9 @@ describe('match play', () => {
       },
     ])('refuses a spy $name', ({ now, zone, code }) => {
       expect(
-        refusal(() => sendSpy(MATCH, playerAt(0), toZoneId(zone()), now, SETTINGS)).code,
+        refusal(() =>
+          sendSpy(MATCH, playerAt(0), toZoneId(zone()), now, SETTINGS),
+        ).code,
       ).toBe(code);
     });
   });
@@ -131,12 +169,23 @@ describe('match play', () => {
     });
 
     it('resolves the night with every submission, then clears them', () => {
-      const submitted = submitOrders(MATCH, playerAt(0), [RECRUIT_LINE], MONDAY_MORNING, SETTINGS);
-      const play = playOf(resolveDueNights(submitted, TUESDAY_RESOLUTION, CONFIG));
+      const submitted = submitOrders(
+        MATCH,
+        playerAt(0),
+        [RECRUIT_LINE],
+        MONDAY_MORNING,
+        SETTINGS,
+      );
+      const play = playOf(
+        resolveDueNights(submitted, TUESDAY_RESOLUTION, CONFIG),
+      );
       expect(play.state.turnNumber).toBe(2);
       expect(play.orders).toEqual([]);
       expect(play.replayLog).toContainEqual(
-        expect.objectContaining({ type: 'UnitsRecruited', playerId: playerAt(0) }),
+        expect.objectContaining({
+          type: 'UnitsRecruited',
+          playerId: playerAt(0),
+        }),
       );
     });
 
@@ -156,14 +205,21 @@ describe('match play', () => {
     it('tells the store when to look next', () => {
       expect(nextResolutionAt(lobbyOf(2, MONDAY_MORNING), CONFIG)).toBeNull();
       expect(nextResolutionAt(MATCH, CONFIG)).toBe('2026-11-03T00:00:00.000Z');
-      expect(nextResolutionAt(resolveDueNights(MATCH, SATURDAY, CONFIG), CONFIG)).toBeNull();
+      expect(
+        nextResolutionAt(resolveDueNights(MATCH, SATURDAY, CONFIG), CONFIG),
+      ).toBeNull();
     });
   });
 
   describe('the open day', () => {
     it.each([
       { name: 'during the day', match: MATCH, now: MONDAY_MORNING, open: true },
-      { name: 'after the deadline', match: MATCH, now: MONDAY_LATE, open: false },
+      {
+        name: 'after the deadline',
+        match: MATCH,
+        now: MONDAY_LATE,
+        open: false,
+      },
       {
         name: 'after Friday',
         match: resolveDueNights(MATCH, SATURDAY, CONFIG),

@@ -8,7 +8,10 @@ import { HealthController } from './http/health.controller';
 import { InvitesController } from './http/invites.controller';
 import { MatchesController } from './http/matches.controller';
 import type { MatchSettings } from './matches/match-settings';
-import { DEFAULT_MATCH_SETTINGS, MATCH_SETTINGS } from './matches/match-settings';
+import {
+  DEFAULT_MATCH_SETTINGS,
+  MATCH_SETTINGS,
+} from './matches/match-settings';
 import { MatchesService } from './matches/matches.service';
 import { MATCH_STORE } from './persistence/match-store';
 import { SqliteMatchStore } from './persistence/sqlite-match-store';

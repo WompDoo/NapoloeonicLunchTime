@@ -49,7 +49,12 @@ export class SqliteMatchStore implements MatchStore, OnModuleDestroy {
       .prepare(
         'insert into matches (match_id, invite_code, version, next_resolution_at, document) values (?, ?, ?, null, ?)',
       )
-      .run(match.matchId, match.inviteCode, FIRST_VERSION, JSON.stringify(match));
+      .run(
+        match.matchId,
+        match.inviteCode,
+        FIRST_VERSION,
+        JSON.stringify(match),
+      );
     return { match, version: FIRST_VERSION };
   };
 
@@ -159,6 +164,8 @@ function playerKeyOf(row: Row | undefined): PlayerKey | undefined {
     ? undefined
     : {
         matchId: decodeNonEmptyString(row['match_id'], 'match_id'),
-        playerId: toPlayerId(decodeNonEmptyString(row['player_id'], 'player_id')),
+        playerId: toPlayerId(
+          decodeNonEmptyString(row['player_id'], 'player_id'),
+        ),
       };
 }

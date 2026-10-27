@@ -15,7 +15,10 @@ export class FakeClock implements Clock, Ticker {
 
   public readonly now = (): Date => new Date(this.current.getTime());
 
-  public readonly every = (_intervalMs: number, tick: () => void): (() => void) => {
+  public readonly every = (
+    _intervalMs: number,
+    tick: () => void,
+  ): (() => void) => {
     this.ticks.add(tick);
     return (): void => {
       this.ticks.delete(tick);

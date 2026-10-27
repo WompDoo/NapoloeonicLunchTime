@@ -25,21 +25,33 @@ function codeOf(action: () => unknown): string {
 
 describe('PlayerAuthenticator', () => {
   it('finds the player behind a bearer token', () => {
-    expect(authenticator().authenticate('Bearer token-a', 'match-1')).toEqual(PLAYER);
+    expect(authenticator().authenticate('Bearer token-a', 'match-1')).toEqual(
+      PLAYER,
+    );
   });
 
   it.each([
     { name: 'no header', header: undefined, code: 'auth.missingToken' },
-    { name: 'another scheme', header: 'Basic token-a', code: 'auth.missingToken' },
-    { name: 'an unknown token', header: 'Bearer token-z', code: 'auth.unknownToken' },
+    {
+      name: 'another scheme',
+      header: 'Basic token-a',
+      code: 'auth.missingToken',
+    },
+    {
+      name: 'an unknown token',
+      header: 'Bearer token-z',
+      code: 'auth.unknownToken',
+    },
   ])('refuses $name', ({ header, code }) => {
-    expect(codeOf(() => authenticator().authenticate(header, 'match-1'))).toBe(code);
+    expect(codeOf(() => authenticator().authenticate(header, 'match-1'))).toBe(
+      code,
+    );
   });
 
   it("refuses a token for another match's URL", () => {
-    expect(codeOf(() => authenticator().authenticate('Bearer token-a', 'match-2'))).toBe(
-      'auth.wrongMatch',
-    );
+    expect(
+      codeOf(() => authenticator().authenticate('Bearer token-a', 'match-2')),
+    ).toBe('auth.wrongMatch');
   });
 
   it('stores tokens as SHA-256 hashes', () => {

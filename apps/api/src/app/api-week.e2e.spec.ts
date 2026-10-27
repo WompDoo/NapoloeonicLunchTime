@@ -3,9 +3,14 @@ import type {
   MatchCreated,
   PlayerJoined,
   PlayingMatchDto,
+  TurnWindowDto,
 } from '@lunch-campaign/contracts';
 import type { PlayerId, PlayerOrders } from '@lunch-campaign/engine';
-import { drawSeating, requirePresent, toPlayerId } from '@lunch-campaign/engine';
+import {
+  drawSeating,
+  requirePresent,
+  toPlayerId,
+} from '@lunch-campaign/engine';
 import { WEEK_ORDERS, WEEK_SEATING } from '@lunch-campaign/honours/testing';
 import type { SpyAction } from '@lunch-campaign/player-view/testing';
 import {
@@ -24,9 +29,12 @@ import { createApi } from './create-api';
  * the libraries build for that player, with the API's player ids.
  */
 
-const API_PLAYERS: readonly PlayerId[] = ['player-a', 'player-b', 'player-c', 'player-d'].map(
-  toPlayerId,
-);
+const API_PLAYERS: readonly PlayerId[] = [
+  'player-a',
+  'player-b',
+  'player-c',
+  'player-d',
+].map(toPlayerId);
 const FIRST_PLAYER = requirePresent(API_PLAYERS[0], 'the first player');
 const MONDAY_MORNING = new Date('2026-11-02T07:00:00Z');
 const ONE_MINUTE_MS = 60_000;
@@ -51,7 +59,9 @@ function scriptedSeatOf(apiPlayer: PlayerId): (typeof WEEK_SEATING)[number] {
 
 function apiPlayerFor(scriptedPlayer: PlayerId): PlayerId {
   return requirePresent(
-    API_PLAYERS.find((apiPlayer) => scriptedSeatOf(apiPlayer).playerId === scriptedPlayer),
+    API_PLAYERS.find(
+      (apiPlayer) => scriptedSeatOf(apiPlayer).playerId === scriptedPlayer,
+    ),
     scriptedPlayer,
   );
 }
@@ -60,7 +70,8 @@ function apiPlayerFor(scriptedPlayer: PlayerId): PlayerId {
 function renamed<T>(value: T): T {
   return JSON.parse(
     API_PLAYERS.reduce(
-      (json, apiPlayer) => json.replaceAll(scriptedSeatOf(apiPlayer).playerId, apiPlayer),
+      (json, apiPlayer) =>
+        json.replaceAll(scriptedSeatOf(apiPlayer).playerId, apiPlayer),
       JSON.stringify(value),
     ),
   ) as T;
@@ -78,9 +89,19 @@ describe('a full week through the API', () => {
   }
 
   async function viewOf(playerId: PlayerId): Promise<PlayingMatchDto> {
-    const response = await api.send('GET', `/matches/${matchId}`, { token: tokenOf(playerId) });
+    const response = await api.send('GET', `/matches/${matchId}`, {
+      token: tokenOf(playerId),
+    });
     expect(response.status).toBe(200);
     return response.body as PlayingMatchDto;
+  }
+
+  async function openDayNow(): Promise<TurnWindowDto> {
+    const { openDay } = await viewOf(FIRST_PLAYER);
+    if (openDay === null) {
+      throw new Error('No day is open');
+    }
+    return openDay;
   }
 
   async function sendSpy(spy: SpyAction): Promise<void> {
@@ -108,10 +129,16 @@ describe('a full week through the API', () => {
   }
 
   async function playDay(day: number): Promise<void> {
-    await inSequence(requirePresent(WEEK_SPIES[day], `spies of day ${day}`), sendSpy);
-    await inSequence(requirePresent(WEEK_ORDERS[day], `orders of day ${day}`), submit);
+    await inSequence(
+      requirePresent(WEEK_SPIES[day], `spies of day ${day}`),
+      sendSpy,
+    );
+    await inSequence(
+      requirePresent(WEEK_ORDERS[day], `orders of day ${day}`),
+      submit,
+    );
     await expectEveryViewToMatch(day);
-    const today = requirePresent((await viewOf(FIRST_PLAYER)).openDay, 'open day');
+    const today = await openDayNow();
     clock.advanceTo(new Date(Date.parse(today.deadlineAt) + ONE_MINUTE_MS));
     const late = await api.send('PUT', `/matches/${matchId}/orders`, {
       token: tokenOf(FIRST_PLAYER),
@@ -128,7 +155,11 @@ describe('a full week through the API', () => {
       ticker: clock,
       random: scriptedRandom({
         ids: ['match-1', ...API_PLAYERS],
-        secrets: ['invite-1', ...API_PLAYERS.map((playerId) => `token-of-${playerId}`), WEEK_SEED],
+        secrets: [
+          'invite-1',
+          ...API_PLAYERS.map((playerId) => `token-of-${playerId}`),
+          WEEK_SEED,
+        ],
       }),
       webOrigin: null,
       logLevels: [],
@@ -142,8 +173,13 @@ describe('a full week through the API', () => {
   });
 
   it('opens a lobby that four players join through the invite', async () => {
-    const created = await api.send('POST', '/matches', { body: { timeZone: 'Europe/Tallinn' } });
-    expect(created).toEqual({ status: 201, body: { matchId: 'match-1', inviteCode: 'invite-1' } });
+    const created = await api.send('POST', '/matches', {
+      body: { timeZone: 'Europe/Tallinn' },
+    });
+    expect(created).toEqual({
+      status: 201,
+      body: { matchId: 'match-1', inviteCode: 'invite-1' },
+    });
     matchId = (created.body as MatchCreated).matchId;
     await inSequence(API_PLAYERS, async (playerId) => {
       const joined = await api.send('POST', '/invites/invite-1/players', {

@@ -47,9 +47,7 @@ function definedOnly(
   values: Readonly<Record<keyof EnvironmentValues, string | undefined>>,
 ): Partial<EnvironmentValues> {
   return Object.fromEntries(
-    Object.entries(values).filter(
-      (entry): boolean => entry[1] !== undefined,
-    ),
+    Object.entries(values).filter((entry): boolean => entry[1] !== undefined),
   );
 }
 

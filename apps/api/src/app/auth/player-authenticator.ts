@@ -17,9 +17,7 @@ export function hashPlayerToken(token: string): string {
  */
 @Injectable()
 export class PlayerAuthenticator {
-  public constructor(
-    @Inject(MATCH_STORE) private readonly store: MatchStore,
-  ) {}
+  public constructor(@Inject(MATCH_STORE) private readonly store: MatchStore) {}
 
   public authenticate(
     authorization: string | undefined,

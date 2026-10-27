@@ -14,7 +14,11 @@ import { toPlayerId, toZoneId } from '@lunch-campaign/engine';
 import type { SpyReport } from '@lunch-campaign/player-view';
 import { hashPlayerToken } from '../auth/player-authenticator';
 import { domainError } from '../errors/domain-error';
-import type { MatchStore, PlayerKey, SavedMatch } from '../persistence/match-store';
+import type {
+  MatchStore,
+  PlayerKey,
+  SavedMatch,
+} from '../persistence/match-store';
 import { MATCH_STORE } from '../persistence/match-store';
 import type { Clock } from '../platform/clock';
 import { CLOCK } from '../platform/clock';

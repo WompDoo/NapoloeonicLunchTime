@@ -20,7 +20,9 @@ describe('the API over HTTP', () => {
 
   async function join(inviteCode: string, name: string): Promise<PlayerJoined> {
     return (
-      await api.send('POST', `/invites/${inviteCode}/players`, { body: { name } })
+      await api.send('POST', `/invites/${inviteCode}/players`, {
+        body: { name },
+      })
     ).body as PlayerJoined;
   }
 
@@ -43,12 +45,19 @@ describe('the API over HTTP', () => {
   });
 
   it('is healthy', async () => {
-    expect(await api.send('GET', '/health')).toEqual({ status: 200, body: { status: 'ok' } });
+    expect(await api.send('GET', '/health')).toEqual({
+      status: 200,
+      body: { status: 'ok' },
+    });
   });
 
   it('lets the web client call it from its origin', async () => {
-    const response = await fetch(`${baseUrl}/health`, { headers: { origin: WEB_ORIGIN } });
-    expect(response.headers.get('access-control-allow-origin')).toBe(WEB_ORIGIN);
+    const response = await fetch(`${baseUrl}/health`, {
+      headers: { origin: WEB_ORIGIN },
+    });
+    expect(response.headers.get('access-control-allow-origin')).toBe(
+      WEB_ORIGIN,
+    );
   });
 
   it.each([
@@ -108,11 +117,18 @@ describe('the API over HTTP', () => {
       status: 401,
       code: 'auth.unknownToken',
     },
-  ])('answers $name with $status $code', async ({ method, path, request, status, code }) => {
-    const response = await api.send(method, path, request);
-    expect(response.status).toBe(status);
-    expect(response.body).toMatchObject({ statusCode: status, code, problems: [] });
-  });
+  ])(
+    'answers $name with $status $code',
+    async ({ method, path, request, status, code }) => {
+      const response = await api.send(method, path, request);
+      expect(response.status).toBe(status);
+      expect(response.body).toMatchObject({
+        statusCode: status,
+        code,
+        problems: [],
+      });
+    },
+  );
 
   it('keeps players to their own match', async () => {
     const first = await newMatch();
@@ -121,7 +137,10 @@ describe('the API over HTTP', () => {
     const response = await api.send('GET', `/matches/${second.matchId}`, {
       token: player.playerToken,
     });
-    expect(response).toMatchObject({ status: 403, body: { code: 'auth.wrongMatch' } });
+    expect(response).toMatchObject({
+      status: 403,
+      body: { code: 'auth.wrongMatch' },
+    });
   });
 
   it('runs a lobby: full, ready without a pick, leaving', async () => {
@@ -130,23 +149,41 @@ describe('the API over HTTP', () => {
     await inSequence(['Ney', 'Soult', 'Davout', 'Lannes'], async (name) => {
       players.push(await join(match.inviteCode, name));
     });
-    const full = await api.send('POST', `/invites/${match.inviteCode}/players`, {
-      body: { name: 'Bernadotte' },
-    });
+    const full = await api.send(
+      'POST',
+      `/invites/${match.inviteCode}/players`,
+      {
+        body: { name: 'Bernadotte' },
+      },
+    );
     expect(full).toMatchObject({ status: 409, body: { code: 'lobby.full' } });
     const [ney, soult] = players as [PlayerJoined, PlayerJoined];
     const unpicked = await api.send('PUT', `/matches/${match.matchId}/ready`, {
       token: ney.playerToken,
       body: { ready: true },
     });
-    expect(unpicked).toMatchObject({ status: 409, body: { code: 'lobby.noCommander' } });
-    const left = await api.send('DELETE', `/matches/${match.matchId}/players/me`, {
+    expect(unpicked).toMatchObject({
+      status: 409,
+      body: { code: 'lobby.noCommander' },
+    });
+    const left = await api.send(
+      'DELETE',
+      `/matches/${match.matchId}/players/me`,
+      {
+        token: soult.playerToken,
+      },
+    );
+    expect(left).toEqual({ status: 204, body: null });
+    const gone = await api.send('GET', `/matches/${match.matchId}`, {
       token: soult.playerToken,
     });
-    expect(left).toEqual({ status: 204, body: null });
-    const gone = await api.send('GET', `/matches/${match.matchId}`, { token: soult.playerToken });
-    expect(gone).toMatchObject({ status: 401, body: { code: 'auth.unknownToken' } });
-    const lobby = await api.send('GET', `/matches/${match.matchId}`, { token: ney.playerToken });
+    expect(gone).toMatchObject({
+      status: 401,
+      body: { code: 'auth.unknownToken' },
+    });
+    const lobby = await api.send('GET', `/matches/${match.matchId}`, {
+      token: ney.playerToken,
+    });
     expect(lobby.body).toMatchObject({ phase: 'lobby', members: [{}, {}, {}] });
   });
 
@@ -158,7 +195,10 @@ describe('the API over HTTP', () => {
       token: ney.playerToken,
       body: { orders: [] },
     });
-    expect(early).toMatchObject({ status: 409, body: { code: 'match.notStarted' } });
+    expect(early).toMatchObject({
+      status: 409,
+      body: { code: 'match.notStarted' },
+    });
     await inSequence([ney, soult], async (player) => {
       await api.send('PUT', `/matches/${match.matchId}/commander`, {
         token: player.playerToken,
@@ -186,6 +226,9 @@ describe('the API over HTTP', () => {
       token: ney.playerToken,
       body: { zoneId: 'Z9' },
     });
-    expect(spy).toMatchObject({ status: 422, body: { code: 'spy.unknownZone' } });
+    expect(spy).toMatchObject({
+      status: 422,
+      body: { code: 'spy.unknownZone' },
+    });
   });
 });

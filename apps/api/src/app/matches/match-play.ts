@@ -76,7 +76,10 @@ export function sendSpy(
   const play = requireOpenDay(match, now, settings.config);
   const outcome = spyOnZone(play.state, settings.config, playerId, zoneId);
   if (outcome.kind === 'rejected') {
-    throw domainError(`spy.${outcome.reason}`, `No spy sent: ${outcome.reason}`);
+    throw domainError(
+      `spy.${outcome.reason}`,
+      `No spy sent: ${outcome.reason}`,
+    );
   }
   return {
     match: {

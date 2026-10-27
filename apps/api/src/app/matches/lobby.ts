@@ -52,7 +52,10 @@ export function joinLobby(
   return { ...match, members: [...match.members, { ...member, pick: null }] };
 }
 
-export function leaveLobby(match: StoredMatch, playerId: PlayerId): StoredMatch {
+export function leaveLobby(
+  match: StoredMatch,
+  playerId: PlayerId,
+): StoredMatch {
   requireLobby(match);
   requireMember(match, playerId);
   return {
@@ -75,7 +78,10 @@ export function pickCommander(
   return updateMember(
     match,
     playerId,
-    (member): LobbyMember => ({ ...member, pick: { commanderId, ready: false } }),
+    (member): LobbyMember => ({
+      ...member,
+      pick: { commanderId, ready: false },
+    }),
   );
 }
 
@@ -92,7 +98,11 @@ export function setReady(
 ): StoredMatch {
   requireLobby(match);
   return startIfEveryoneReady(
-    updateMember(match, playerId, (member): LobbyMember => withReady(member, ready)),
+    updateMember(
+      match,
+      playerId,
+      (member): LobbyMember => withReady(member, ready),
+    ),
     start,
     settings,
   );
@@ -100,7 +110,10 @@ export function setReady(
 
 function withReady(member: LobbyMember, ready: boolean): LobbyMember {
   if (member.pick === null) {
-    throw domainError('lobby.noCommander', 'Pick a commander before getting ready');
+    throw domainError(
+      'lobby.noCommander',
+      'Pick a commander before getting ready',
+    );
   }
   return { ...member, pick: { ...member.pick, ready } };
 }

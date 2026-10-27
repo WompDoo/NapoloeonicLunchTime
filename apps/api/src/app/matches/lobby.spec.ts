@@ -1,4 +1,9 @@
-import { findZone, toPlayerId, toZoneId } from '@lunch-campaign/engine';
+import {
+  findZone,
+  requirePresent,
+  toPlayerId,
+  toZoneId,
+} from '@lunch-campaign/engine';
 import {
   emptyLobby,
   lobbyOf,
@@ -8,7 +13,7 @@ import {
   SETTINGS,
   startedMatch,
 } from '../../testing/match-fixtures';
-import { DomainError } from '../errors/domain-error';
+import type { DomainError } from '../errors/domain-error';
 import {
   joinLobby,
   leaveLobby,
@@ -16,9 +21,13 @@ import {
   pickCommander,
   setReady,
 } from './lobby';
-import type { StoredMatch } from './stored-match';
+import type { CommanderPick, StoredMatch } from './stored-match';
 
 const START = { now: MONDAY_MORNING, drawMatchSeed: (): string => 'seed' };
+
+function firstPick(match: StoredMatch): CommanderPick | null {
+  return requirePresent(match.members[0], 'the first member').pick;
+}
 
 function errorCodeOf(action: () => unknown): string {
   try {
@@ -53,10 +62,19 @@ describe('lobby', () => {
 
   it('takes one player per starting capital', () => {
     const full = lobbyOf(4, MONDAY_MORNING);
-    expect(full.members.map((member) => member.pick)).toEqual([null, null, null, null]);
+    expect(full.members.map((member) => member.pick)).toEqual([
+      null,
+      null,
+      null,
+      null,
+    ]);
     expect(
       errorCodeOf(() =>
-        joinLobby(full, { playerId: toPlayerId('player-e'), name: 'E' }, SETTINGS),
+        joinLobby(
+          full,
+          { playerId: toPlayerId('player-e'), name: 'E' },
+          SETTINGS,
+        ),
       ),
     ).toBe('lobby.full');
   });
@@ -70,9 +88,9 @@ describe('lobby', () => {
       START,
       SETTINGS,
     );
-    expect(ready.members[0]?.pick).toEqual({ commanderId: 'murat', ready: true });
+    expect(firstPick(ready)).toEqual({ commanderId: 'murat', ready: true });
     expect(
-      pickCommander(ready, playerAt(0), 'moore', SETTINGS).members[0]?.pick,
+      firstPick(pickCommander(ready, playerAt(0), 'moore', SETTINGS)),
     ).toEqual({ commanderId: 'moore', ready: false });
   });
 
@@ -110,7 +128,12 @@ describe('lobby', () => {
   describe('starting', () => {
     it('waits for the minimum number of players', () => {
       const alone = setReady(
-        pickCommander(lobbyOf(1, MONDAY_MORNING), playerAt(0), 'murat', SETTINGS),
+        pickCommander(
+          lobbyOf(1, MONDAY_MORNING),
+          playerAt(0),
+          'murat',
+          SETTINGS,
+        ),
         playerAt(0),
         true,
         START,
@@ -136,7 +159,9 @@ describe('lobby', () => {
       const oneReady = setReady(picked, playerAt(0), true, start, SETTINGS);
       expect(oneReady.play).toBeNull();
       expect(draws).toEqual([]);
-      expect(setReady(oneReady, playerAt(1), true, start, SETTINGS).play).not.toBeNull();
+      expect(
+        setReady(oneReady, playerAt(1), true, start, SETTINGS).play,
+      ).not.toBeNull();
       expect(draws).toEqual(['drawn']);
     });
 
@@ -153,20 +178,24 @@ describe('lobby', () => {
         START,
         SETTINGS,
       );
-      expect(setReady(unready, playerAt(1), true, START, SETTINGS).play).toBeNull();
+      expect(
+        setReady(unready, playerAt(1), true, START, SETTINGS).play,
+      ).toBeNull();
     });
 
     it('draws seats, reveals picks and leaves unused capitals neutral', () => {
-      const play = playOf(startedMatch(['murat', 'moore'], MONDAY_MORNING, 'seed'));
+      const play = playOf(
+        startedMatch(['murat', 'moore'], MONDAY_MORNING, 'seed'),
+      );
       expect(play.state.players.map((player) => player.seat)).toEqual([1, 2]);
       expect(
-        play.state.players
-          .map((player) => [player.playerId, player.commanderId])
-          .toSorted(),
-      ).toEqual([
-        [playerAt(0), 'murat'],
-        [playerAt(1), 'moore'],
-      ]);
+        Object.fromEntries(
+          play.state.players.map((player) => [
+            player.playerId,
+            player.commanderId,
+          ]),
+        ),
+      ).toEqual({ [playerAt(0)]: 'murat', [playerAt(1)]: 'moore' });
       ['D1', 'D4'].forEach((capital) => {
         expect(findZone(play.state, toZoneId(capital))).toEqual({
           zoneId: capital,
@@ -193,7 +222,11 @@ describe('lobby', () => {
       const started = startedMatch(['murat', 'moore'], MONDAY_MORNING, 'seed');
       expect(
         errorCodeOf(() =>
-          joinLobby(started, { playerId: toPlayerId('late'), name: 'Late' }, SETTINGS),
+          joinLobby(
+            started,
+            { playerId: toPlayerId('late'), name: 'Late' },
+            SETTINGS,
+          ),
         ),
       ).toBe('lobby.started');
     });

@@ -9,7 +9,9 @@ function sent(exception: unknown): ApiError {
   const response = { status: jest.fn(), json: jest.fn() };
   response.status.mockReturnValue(response);
   const host = {
-    switchToHttp: () => ({ getResponse: () => response }),
+    switchToHttp: (): { getResponse: () => typeof response } => ({
+      getResponse: (): typeof response => response,
+    }),
   } as unknown as ArgumentsHost;
   new ApiExceptionFilter().catch(exception, host);
   const [body] = response.json.mock.calls[0] as [ApiError];
@@ -22,7 +24,11 @@ describe('ApiExceptionFilter', () => {
     jest.restoreAllMocks();
   });
 
-  it.each<{ readonly name: string; readonly exception: unknown; readonly body: ApiError }>([
+  it.each<{
+    readonly name: string;
+    readonly exception: unknown;
+    readonly body: ApiError;
+  }>([
     {
       name: 'a refused order submission, with its problems',
       exception: new DomainError('orders.invalid', '1 orders were refused', [
@@ -38,7 +44,12 @@ describe('ApiExceptionFilter', () => {
     {
       name: 'a closed day',
       exception: domainError('day.closed', 'closed'),
-      body: { statusCode: 409, code: 'day.closed', message: 'closed', problems: [] },
+      body: {
+        statusCode: 409,
+        code: 'day.closed',
+        message: 'closed',
+        problems: [],
+      },
     },
     {
       name: 'a body it cannot read',
@@ -75,7 +86,9 @@ describe('ApiExceptionFilter', () => {
   });
 
   it('hides and logs anything unexpected', () => {
-    const log = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+    const log = jest
+      .spyOn(Logger.prototype, 'error')
+      .mockImplementation(() => undefined);
     const crash = new TypeError('secret internals');
     expect(sent(crash)).toEqual({
       statusCode: 500,

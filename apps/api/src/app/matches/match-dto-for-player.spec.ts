@@ -23,7 +23,12 @@ describe('matchDtoFor', () => {
       'moore',
       SETTINGS,
     );
-    const dto = matchDtoFor(lobby, playerAt(0), MONDAY_MORNING, SETTINGS) as LobbyDto;
+    const dto = matchDtoFor(
+      lobby,
+      playerAt(0),
+      MONDAY_MORNING,
+      SETTINGS,
+    ) as LobbyDto;
     expect(dto).toEqual({
       phase: 'lobby',
       matchId: 'match-1',
@@ -32,18 +37,33 @@ describe('matchDtoFor', () => {
       yourPlayerId: playerAt(0),
       yourCommanderId: 'murat',
       members: [
-        { playerId: playerAt(0), name: 'Name of player-a', hasPicked: true, ready: false },
-        { playerId: playerAt(1), name: 'Name of player-b', hasPicked: true, ready: false },
+        {
+          playerId: playerAt(0),
+          name: 'Name of player-a',
+          hasPicked: true,
+          ready: false,
+        },
+        {
+          playerId: playerAt(1),
+          name: 'Name of player-b',
+          hasPicked: true,
+          ready: false,
+        },
       ],
       commanderIds: SETTINGS.config.commanders.map((commander) => commander.id),
       minimumPlayers: 2,
       maximumPlayers: 4,
     });
-    expect(JSON.stringify(dto)).not.toContain('moore');
+    expect(JSON.stringify(dto.members)).not.toContain('moore');
   });
 
   it('shows no pick before one is made', () => {
-    const dto = matchDtoFor(lobbyOf(1, MONDAY_MORNING), playerAt(0), MONDAY_MORNING, SETTINGS);
+    const dto = matchDtoFor(
+      lobbyOf(1, MONDAY_MORNING),
+      playerAt(0),
+      MONDAY_MORNING,
+      SETTINGS,
+    );
     expect(dto).toMatchObject({ yourCommanderId: null });
   });
 
@@ -62,7 +82,12 @@ describe('matchDtoFor', () => {
       SETTINGS,
     );
     const play = playOf(match);
-    const dto = matchDtoFor(match, playerAt(0), MONDAY_MORNING, SETTINGS) as PlayingMatchDto;
+    const dto = matchDtoFor(
+      match,
+      playerAt(0),
+      MONDAY_MORNING,
+      SETTINGS,
+    ) as PlayingMatchDto;
     expect(dto).toEqual({
       phase: 'running',
       matchId: 'match-1',
@@ -90,7 +115,12 @@ describe('matchDtoFor', () => {
       SETTINGS.config,
     );
     expect(
-      matchDtoFor(finished, playerAt(1), new Date('2026-11-07T08:00:00Z'), SETTINGS),
+      matchDtoFor(
+        finished,
+        playerAt(1),
+        new Date('2026-11-07T08:00:00Z'),
+        SETTINGS,
+      ),
     ).toMatchObject({ phase: 'finished', openDay: null, yourOrders: [] });
   });
 });

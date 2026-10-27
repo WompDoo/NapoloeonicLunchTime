@@ -1,4 +1,4 @@
-import { toPlayerId } from '@lunch-campaign/engine';
+import { requirePresent, toPlayerId } from '@lunch-campaign/engine';
 import { DatabaseSync } from 'node:sqlite';
 import {
   emptyLobby,
@@ -11,12 +11,25 @@ import { nextResolutionAt } from '../matches/match-play';
 import type { StoredMatch } from '../matches/stored-match';
 import { SqliteMatchStore } from './sqlite-match-store';
 
+function codeOf(action: () => unknown): string {
+  try {
+    action();
+  } catch (error) {
+    return (error as DomainError).code;
+  }
+  throw new Error('Expected a domain error');
+}
+
 function newStore(): SqliteMatchStore {
   return new SqliteMatchStore(new DatabaseSync(':memory:'));
 }
 
 function otherLobby(): StoredMatch {
-  return { ...emptyLobby(MONDAY_MORNING), matchId: 'match-2', inviteCode: 'invite-2' };
+  return {
+    ...emptyLobby(MONDAY_MORNING),
+    matchId: 'match-2',
+    inviteCode: 'invite-2',
+  };
 }
 
 describe('SqliteMatchStore', () => {
@@ -33,16 +46,18 @@ describe('SqliteMatchStore', () => {
   it('bumps the version on every update and refuses a stale one', () => {
     const store = newStore();
     const first = store.insert(emptyLobby(MONDAY_MORNING));
-    const second = store.update(first, { ...first.match, timeZone: 'UTC' }, null);
+    const second = store.update(
+      first,
+      { ...first.match, timeZone: 'UTC' },
+      null,
+    );
     expect(second.version).toBe(2);
-    expect(store.find('match-1')?.match.timeZone).toBe('UTC');
-    let conflict: DomainError | undefined;
-    try {
-      store.update(first, first.match, null);
-    } catch (error) {
-      conflict = error as DomainError;
-    }
-    expect(conflict?.code).toBe('match.conflict');
+    expect(
+      requirePresent(store.find('match-1'), 'match-1').match.timeZone,
+    ).toBe('UTC');
+    expect(codeOf(() => store.update(first, first.match, null))).toBe(
+      'match.conflict',
+    );
   });
 
   it('lists the matches whose next night is due, oldest first', () => {
@@ -52,7 +67,9 @@ describe('SqliteMatchStore', () => {
     store.update(lobby, started, nextResolutionAt(started, SETTINGS.config));
     const other = store.insert(otherLobby());
     store.update(other, other.match, '2026-11-02T23:00:00.000Z');
-    expect(store.dueForResolution(new Date('2026-11-02T22:00:00Z'))).toEqual([]);
+    expect(store.dueForResolution(new Date('2026-11-02T22:00:00Z'))).toEqual(
+      [],
+    );
     expect(store.dueForResolution(new Date('2026-11-03T00:00:00Z'))).toEqual([
       'match-2',
       'match-1',
@@ -71,7 +88,11 @@ describe('SqliteMatchStore', () => {
 
   it('keeps all of a transaction or none of it', () => {
     const store = newStore();
-    expect(store.inTransaction(() => store.insert(emptyLobby(MONDAY_MORNING)).version)).toBe(1);
+    expect(
+      store.inTransaction(
+        () => store.insert(emptyLobby(MONDAY_MORNING)).version,
+      ),
+    ).toBe(1);
     expect(() =>
       store.inTransaction(() => {
         store.insert(otherLobby());

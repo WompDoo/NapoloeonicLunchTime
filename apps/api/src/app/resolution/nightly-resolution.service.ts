@@ -59,8 +59,15 @@ export class NightlyResolutionService
   private resolveMatch(matchId: string, now: Date): void {
     try {
       this.store.inTransaction((): void => {
-        const saved = requirePresent(this.store.find(matchId), `match ${matchId}`);
-        const resolved = resolveDueNights(saved.match, now, this.settings.config);
+        const saved = requirePresent(
+          this.store.find(matchId),
+          `match ${matchId}`,
+        );
+        const resolved = resolveDueNights(
+          saved.match,
+          now,
+          this.settings.config,
+        );
         this.store.update(
           saved,
           resolved,
