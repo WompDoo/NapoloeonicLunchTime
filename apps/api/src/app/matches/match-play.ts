@@ -7,13 +7,18 @@ import type {
 } from '@lunch-campaign/engine';
 import {
   isMatchFinished,
+  isZoneOnMap,
   requirePresent,
   resolveTurn,
   validateTurnOrders,
 } from '@lunch-campaign/engine';
 import type { OrderProblem } from '@lunch-campaign/contracts';
-import type { SpyReport } from '@lunch-campaign/player-view';
-import { spyOnZone } from '@lunch-campaign/player-view';
+import type {
+  MatchupPlan,
+  MatchupPreview,
+  SpyReport,
+} from '@lunch-campaign/player-view';
+import { previewMatchup, spyOnZone } from '@lunch-campaign/player-view';
 import type { TurnWindow } from '../calendar/match-calendar';
 import { DomainError, domainError } from '../errors/domain-error';
 import type { MatchSettings } from './match-settings';
@@ -92,6 +97,27 @@ export function sendSpy(
     },
     report: outcome.report,
   };
+}
+
+/** What the player can know about a planned attack, while the day takes orders. */
+export function previewFor(
+  match: StoredMatch,
+  playerId: PlayerId,
+  plan: MatchupPlan,
+  now: Date,
+  settings: MatchSettings,
+): MatchupPreview {
+  const play = requireOpenDay(match, now, settings.config);
+  if (!isZoneOnMap(settings.config.map, plan.toZoneId)) {
+    throw domainError('zone.unknown', `No zone ${plan.toZoneId} on the map`);
+  }
+  return previewMatchup(
+    play.state,
+    { replayLog: play.replayLog, spyLog: play.spyLog },
+    playerId,
+    plan,
+    settings.config,
+  );
 }
 
 /** Resolves every night whose resolution time has passed, oldest first, so a missed night is caught up. */

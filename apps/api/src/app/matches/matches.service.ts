@@ -6,12 +6,13 @@ import type {
   MatchDto,
   PickCommanderRequest,
   PlayerJoined,
+  PreviewRequest,
   ReadyRequest,
   SpyRequest,
   SubmitOrdersRequest,
 } from '@lunch-campaign/contracts';
 import { toPlayerId, toZoneId } from '@lunch-campaign/engine';
-import type { SpyReport } from '@lunch-campaign/player-view';
+import type { MatchupPreview, SpyReport } from '@lunch-campaign/player-view';
 import { hashPlayerToken } from '../auth/player-authenticator';
 import { domainError } from '../errors/domain-error';
 import type {
@@ -32,7 +33,12 @@ import {
   setReady,
 } from './lobby';
 import { matchDtoFor } from './match-dto-for-player';
-import { nextResolutionAt, sendSpy, submitOrders } from './match-play';
+import {
+  nextResolutionAt,
+  previewFor,
+  sendSpy,
+  submitOrders,
+} from './match-play';
 import type { MatchSettings } from './match-settings';
 import { MATCH_SETTINGS } from './match-settings';
 import type { StoredMatch } from './stored-match';
@@ -151,6 +157,16 @@ export class MatchesService {
       this.save(saved, outcome.match);
       return outcome.report;
     });
+  }
+
+  public preview(player: PlayerKey, request: PreviewRequest): MatchupPreview {
+    return previewFor(
+      this.requireMatch(player.matchId).match,
+      player.playerId,
+      { toZoneId: toZoneId(request.toZoneId), units: request.units },
+      this.clock.now(),
+      this.settings,
+    );
   }
 
   private change(

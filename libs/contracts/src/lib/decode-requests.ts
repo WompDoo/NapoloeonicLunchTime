@@ -15,12 +15,14 @@ import {
   EngineContractError,
   mapUnitTypes,
   toZoneId,
+  totalUnitCount,
   UNIT_TYPES,
 } from '@lunch-campaign/engine';
 import type {
   CreateMatchRequest,
   JoinMatchRequest,
   PickCommanderRequest,
+  PreviewRequest,
   ReadyRequest,
   SpyRequest,
   SubmitOrdersRequest,
@@ -163,6 +165,26 @@ export function decodeSpyRequest(body: unknown): SpyRequest {
       zoneId: decodeNonEmptyString(record['zoneId'], `${BODY}.zoneId`),
     }),
   );
+}
+
+export function decodePreviewRequest(body: unknown): PreviewRequest {
+  return decodeBody(
+    body,
+    (record): PreviewRequest => ({
+      toZoneId: decodeNonEmptyString(record['toZoneId'], `${BODY}.toZoneId`),
+      units: requireSomeUnits(
+        decodeUnitCounts(record['units'], `${BODY}.units`),
+        `${BODY}.units`,
+      ),
+    }),
+  );
+}
+
+function requireSomeUnits(units: UnitCounts, path: string): UnitCounts {
+  if (totalUnitCount(units) === 0) {
+    throw new InvalidRequestError(`${path} must hold at least one unit`);
+  }
+  return units;
 }
 
 /** Runs a decoder on a request body, turning every decoding failure into an InvalidRequestError. */

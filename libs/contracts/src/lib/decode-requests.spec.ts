@@ -4,6 +4,7 @@ import {
   decodeCreateMatchRequest,
   decodeJoinMatchRequest,
   decodePickCommanderRequest,
+  decodePreviewRequest,
   decodeReadyRequest,
   decodeSpyRequest,
   decodeSubmitOrdersRequest,
@@ -217,6 +218,17 @@ describe('request decoders', () => {
     },
   ])('refuses $name', ({ decode, message }) => {
     expect(decode).toThrow(new InvalidRequestError(message));
+  });
+
+  it('reads a matchup preview request, which needs at least one unit', () => {
+    expect(
+      decodePreviewRequest({ toZoneId: 'B2', units: { cavalry: 4 } }),
+    ).toEqual({ toZoneId: 'B2', units: createUnitCounts({ cavalry: 4 }) });
+    expect(() =>
+      decodePreviewRequest({ toZoneId: 'B2', units: { cavalry: 0 } }),
+    ).toThrow(
+      new InvalidRequestError('body.units must hold at least one unit'),
+    );
   });
 
   it('lets errors that are not decoding failures through', () => {

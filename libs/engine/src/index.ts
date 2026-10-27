@@ -30,6 +30,7 @@ export {
 } from './lib/orders/validate-orders';
 export * from './lib/combat/battle';
 export { computeStrength } from './lib/combat/combat-strength';
+export { createZoneBattleSides } from './lib/resolution/battle-sides';
 export { removeCasualties } from './lib/combat/casualties';
 export {
   areStrengthsEqual,

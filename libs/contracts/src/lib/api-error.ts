@@ -22,6 +22,7 @@ export type ApiErrorCode =
   | 'lobby.unknownCommander'
   | 'lobby.noCommander'
   | 'day.closed'
+  | 'zone.unknown'
   | 'orders.invalid'
   | `spy.${SpyRejectionReason}`
   | 'internal';

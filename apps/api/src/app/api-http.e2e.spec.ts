@@ -222,6 +222,15 @@ describe('the API over HTTP', () => {
         problems: [{ orderIndex: 0, reason: 'insufficientSupply' }],
       },
     });
+    const preview = await api.send(
+      'POST',
+      `/matches/${match.matchId}/preview`,
+      {
+        token: ney.playerToken,
+        body: { toZoneId: 'B2', units: { line: 2 } },
+      },
+    );
+    expect(preview).toEqual({ status: 200, body: { kind: 'unopposed' } });
     const spy = await api.send('POST', `/matches/${match.matchId}/spies`, {
       token: ney.playerToken,
       body: { zoneId: 'Z9' },

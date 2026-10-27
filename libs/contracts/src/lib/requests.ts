@@ -1,4 +1,4 @@
-import type { Order, PlayerId } from '@lunch-campaign/engine';
+import type { Order, PlayerId, UnitCounts } from '@lunch-campaign/engine';
 
 export interface CreateMatchRequest {
   /** IANA time zone of the match's deadlines, e.g. "Europe/Tallinn". */
@@ -37,4 +37,10 @@ export interface SubmitOrdersRequest {
 
 export interface SpyRequest {
   readonly zoneId: string;
+}
+
+/** A move being planned: what the player could know about the fight, before ordering it. */
+export interface PreviewRequest {
+  readonly toZoneId: string;
+  readonly units: UnitCounts;
 }

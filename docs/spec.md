@@ -481,6 +481,8 @@ v0 is the one-week Points mode on one 4-player map; everything else waits until 
 | 2026-10-27 | Day 1 | The start day if it is a weekday and before the deadline, otherwise the next weekday |
 | 2026-10-27 | Match days | Five weekdays counted from day 1, skipping weekends; the schedule labels name game days, not calendar days |
 | 2026-10-27 | Spying after the deadline | Closed: spies close with orders at the deadline and reopen after the night's resolution |
+| 2026-10-27 | Matchup preview | A best estimate from what the player knows: today's spy report on the zone, otherwise the public count with counter hints. Public modifiers only; tonight's abilities and bombardment are never included |
+| 2026-10-27 | Web languages | English, with every message in a translation catalogue |
 
 **Open questions for the playtest:**
 

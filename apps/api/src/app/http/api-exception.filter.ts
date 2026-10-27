@@ -23,6 +23,7 @@ export const STATUS_BY_CODE: Readonly<Record<ApiErrorCode, HttpStatus>> = {
   'lobby.unknownCommander': HttpStatus.UNPROCESSABLE_ENTITY,
   'lobby.noCommander': HttpStatus.CONFLICT,
   'day.closed': HttpStatus.CONFLICT,
+  'zone.unknown': HttpStatus.UNPROCESSABLE_ENTITY,
   'orders.invalid': HttpStatus.UNPROCESSABLE_ENTITY,
   'spy.matchFinished': HttpStatus.CONFLICT,
   'spy.playerEliminated': HttpStatus.CONFLICT,

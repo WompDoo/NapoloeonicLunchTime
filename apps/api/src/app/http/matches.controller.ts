@@ -14,11 +14,12 @@ import type { MatchCreated, MatchDto } from '@lunch-campaign/contracts';
 import {
   decodeCreateMatchRequest,
   decodePickCommanderRequest,
+  decodePreviewRequest,
   decodeReadyRequest,
   decodeSpyRequest,
   decodeSubmitOrdersRequest,
 } from '@lunch-campaign/contracts';
-import type { SpyReport } from '@lunch-campaign/player-view';
+import type { MatchupPreview, SpyReport } from '@lunch-campaign/player-view';
 import { PlayerAuthenticator } from '../auth/player-authenticator';
 import { MatchesService } from '../matches/matches.service';
 
@@ -100,6 +101,19 @@ export class MatchesController {
     return this.matches.spy(
       this.players.authenticate(authorization, matchId),
       decodeSpyRequest(body),
+    );
+  }
+
+  @Post(':matchId/preview')
+  @HttpCode(HttpStatus.OK)
+  public preview(
+    @Param('matchId') matchId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Body() body: unknown,
+  ): MatchupPreview {
+    return this.matches.preview(
+      this.players.authenticate(authorization, matchId),
+      decodePreviewRequest(body),
     );
   }
 }

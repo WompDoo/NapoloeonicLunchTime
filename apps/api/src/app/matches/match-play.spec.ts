@@ -13,6 +13,7 @@ import {
   nextResolutionAt,
   openDayOf,
   ordersOf,
+  previewFor,
   resolveDueNights,
   sendSpy,
   submitOrders,
@@ -208,6 +209,53 @@ describe('match play', () => {
       expect(
         nextResolutionAt(resolveDueNights(MATCH, SATURDAY, CONFIG), CONFIG),
       ).toBeNull();
+    });
+  });
+
+  describe('previews', () => {
+    it('previews a move from what the player knows', () => {
+      expect(
+        previewFor(
+          MATCH,
+          playerAt(0),
+          {
+            toZoneId: toZoneId(capitalOf(MATCH, playerAt(1))),
+            units: { line: 0, cavalry: 2, skirmishers: 0, artillery: 0 },
+          },
+          MONDAY_MORNING,
+          SETTINGS,
+        ),
+      ).toMatchObject({ kind: 'countOnly', defenderCount: 8 });
+    });
+
+    it.each([
+      {
+        name: 'a zone off the map',
+        zone: 'Z9',
+        now: MONDAY_MORNING,
+        code: 'zone.unknown',
+      },
+      {
+        name: 'after the deadline',
+        zone: 'B2',
+        now: MONDAY_LATE,
+        code: 'day.closed',
+      },
+    ])('refuses $name', ({ zone, now, code }) => {
+      expect(
+        refusal(() =>
+          previewFor(
+            MATCH,
+            playerAt(0),
+            {
+              toZoneId: toZoneId(zone),
+              units: { line: 1, cavalry: 0, skirmishers: 0, artillery: 0 },
+            },
+            now,
+            SETTINGS,
+          ),
+        ).code,
+      ).toBe(code);
     });
   });
 

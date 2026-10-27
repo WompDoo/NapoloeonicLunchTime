@@ -31,3 +31,4 @@ export type {
   MatchScore,
   PlayerFinalScore,
 } from '@lunch-campaign/honours';
+export * from './lib/matchup-preview';
