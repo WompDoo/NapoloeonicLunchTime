@@ -4,7 +4,5 @@
 /.nx/cache
 /.nx/workspace-data
 yarn.lock
-# The spec is authored outside the repo; keep it byte-identical to the source so re-exports diff cleanly
-/docs/spec.md
 
 .angular
